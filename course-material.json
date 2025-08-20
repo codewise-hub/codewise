@@ -1,0 +1,241 @@
+{
+  "courses": [
+    {
+      "title": "Blockly Adventures for Kids",
+      "description": "Learn coding fundamentals through visual block programming with fun characters and games.",
+      "ageGroup": "6-11",
+      "difficulty": "beginner",
+      "category": "programming",
+      "imageUrl": "https://images.unsplash.com/photo-1558618866-fcd25c85cd64?w=400",
+      "estimatedHours": 8,
+      "isActive": true,
+      "lessons": [
+        {
+          "title": "Meet Your Robot Friend",
+          "description": "Introduction to Blockly and basic movement commands",
+          "content": "{\"type\":\"interactive\",\"blocks\":[\"move_forward\",\"turn_left\",\"turn_right\"],\"goal\":\"Help the robot reach the treasure!\",\"instructions\":\"Drag blocks to make your robot move forward and turn to reach the golden treasure.\"}",
+          "orderIndex": 1,
+          "type": "interactive",
+          "estimatedMinutes": 20,
+          "isRequired": true
+        },
+        {
+          "title": "Making Patterns",
+          "description": "Learn loops by creating colorful patterns",
+          "content": "{\"type\":\"interactive\",\"blocks\":[\"repeat\",\"change_color\",\"move_forward\"],\"goal\":\"Create a rainbow pattern!\",\"instructions\":\"Use the repeat block to make your robot draw a rainbow pattern by changing colors.\"}",
+          "orderIndex": 2,
+          "type": "interactive",
+          "estimatedMinutes": 25,
+          "isRequired": true
+        },
+        {
+          "title": "Robot Dance Party",
+          "description": "Combine movements to create fun dance sequences",
+          "content": "{\"type\":\"interactive\",\"blocks\":[\"repeat\",\"move_forward\",\"turn_left\",\"turn_right\",\"play_sound\"],\"goal\":\"Make your robot dance!\",\"instructions\":\"Create a fun dance by combining moves and sounds. Make it repeat!\"}",
+          "orderIndex": 3,
+          "type": "interactive",
+          "estimatedMinutes": 30,
+          "isRequired": true
+        },
+        {
+          "title": "Smart Robot Decisions",
+          "description": "Introduction to if-then logic with obstacles",
+          "content": "{\"type\":\"interactive\",\"blocks\":[\"if\",\"sensor_front\",\"move_forward\",\"turn_left\"],\"goal\":\"Navigate around obstacles!\",\"instructions\":\"Use if-then blocks to help your robot avoid obstacles and reach the goal.\"}",
+          "orderIndex": 4,
+          "type": "interactive",
+          "estimatedMinutes": 35,
+          "isRequired": true
+        }
+      ]
+    },
+    {
+      "title": "JavaScript Fundamentals",
+      "description": "Learn real programming with JavaScript through interactive projects and games.",
+      "ageGroup": "12-17",
+      "difficulty": "beginner",
+      "category": "programming",
+      "imageUrl": "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400",
+      "estimatedHours": 12,
+      "isActive": true,
+      "lessons": [
+        {
+          "title": "Your First Program",
+          "description": "Write your first JavaScript code and see it in action",
+          "content": "{\"type\":\"code\",\"starter_code\":\"// Welcome to JavaScript!\\nconsole.log('Hello, World!');\",\"instructions\":\"Modify the message and run your code to see what happens.\",\"expected_output\":\"Hello, World!\"}",
+          "orderIndex": 1,
+          "type": "interactive",
+          "estimatedMinutes": 30,
+          "isRequired": true
+        },
+        {
+          "title": "Variables and Data",
+          "description": "Store and manipulate information in your programs",
+          "content": "{\"type\":\"code\",\"starter_code\":\"let playerName = 'Hero';\\nlet playerLevel = 1;\\nlet playerHealth = 100;\\n\\nconsole.log(`${playerName} is level ${playerLevel} with ${playerHealth} health`);\",\"instructions\":\"Create your own character with different stats and display them.\"}",
+          "orderIndex": 2,
+          "type": "interactive",
+          "estimatedMinutes": 35,
+          "isRequired": true
+        },
+        {
+          "title": "Making Decisions",
+          "description": "Use if statements to create interactive programs",
+          "content": "{\"type\":\"code\",\"starter_code\":\"let weather = 'sunny';\\n\\nif (weather === 'sunny') {\\n  console.log('Let\\'s go to the beach!');\\n} else if (weather === 'rainy') {\\n  console.log('Time to read a book inside.');\\n} else {\\n  console.log('Perfect day for anything!');\\n}\",\"instructions\":\"Create a program that gives different advice based on the weather.\"}",
+          "orderIndex": 3,
+          "type": "interactive",
+          "estimatedMinutes": 40,
+          "isRequired": true
+        },
+        {
+          "title": "Loops and Repetition",
+          "description": "Automate repetitive tasks with loops",
+          "content": "{\"type\":\"code\",\"starter_code\":\"// Count down from 10\\nfor (let i = 10; i >= 1; i--) {\\n  console.log(i);\\n}\\nconsole.log('Blast off!');\",\"instructions\":\"Create your own countdown or counting program.\"}",
+          "orderIndex": 4,
+          "type": "interactive",
+          "estimatedMinutes": 35,
+          "isRequired": true
+        },
+        {
+          "title": "Functions - Your Programming Tools",
+          "description": "Create reusable blocks of code with functions",
+          "content": "{\"type\":\"code\",\"starter_code\":\"function greetPlayer(name, level) {\\n  return `Welcome back, ${name}! You are level ${level}.`;\\n}\\n\\nlet message = greetPlayer('Alex', 5);\\nconsole.log(message);\",\"instructions\":\"Create your own function that calculates something useful.\"}",
+          "orderIndex": 5,
+          "type": "interactive",
+          "estimatedMinutes": 45,
+          "isRequired": true
+        }
+      ]
+    },
+    {
+      "title": "Web Development Basics",
+      "description": "Build your first websites with HTML, CSS, and JavaScript.",
+      "ageGroup": "12-17",
+      "difficulty": "intermediate",
+      "category": "web-development",
+      "imageUrl": "https://images.unsplash.com/photo-1547658719-da2b51169166?w=400",
+      "estimatedHours": 15,
+      "isActive": true,
+      "lessons": [
+        {
+          "title": "HTML - The Structure of Web Pages",
+          "description": "Learn to create the skeleton of web pages",
+          "content": "{\"type\":\"web\",\"html\":\"<!DOCTYPE html>\\n<html>\\n<head>\\n  <title>My First Website</title>\\n</head>\\n<body>\\n  <h1>Welcome to My Website</h1>\\n  <p>This is my first paragraph!</p>\\n</body>\\n</html>\",\"instructions\":\"Add more headings and paragraphs to create your personal webpage.\"}",
+          "orderIndex": 1,
+          "type": "interactive",
+          "estimatedMinutes": 40,
+          "isRequired": true
+        },
+        {
+          "title": "CSS - Making It Beautiful",
+          "description": "Style your web pages with colors, fonts, and layouts",
+          "content": "{\"type\":\"web\",\"html\":\"<h1>My Styled Page</h1>\\n<p class='highlight'>This paragraph is special!</p>\",\"css\":\"h1 {\\n  color: blue;\\n  text-align: center;\\n}\\n\\n.highlight {\\n  background-color: yellow;\\n  padding: 10px;\\n  border-radius: 5px;\\n}\",\"instructions\":\"Experiment with different colors, sizes, and styles.\"}",
+          "orderIndex": 2,
+          "type": "interactive",
+          "estimatedMinutes": 45,
+          "isRequired": true
+        },
+        {
+          "title": "JavaScript - Making It Interactive",
+          "description": "Add interactivity to your web pages",
+          "content": "{\"type\":\"web\",\"html\":\"<button onclick='changeColor()'>Click Me!</button>\\n<p id='message'>Hello World!</p>\",\"css\":\"button {\\n  padding: 10px 20px;\\n  font-size: 16px;\\n  background-color: #007bff;\\n  color: white;\\n  border: none;\\n  border-radius: 5px;\\n  cursor: pointer;\\n}\",\"js\":\"function changeColor() {\\n  const message = document.getElementById('message');\\n  message.style.color = message.style.color === 'red' ? 'blue' : 'red';\\n}\",\"instructions\":\"Create more interactive buttons and effects.\"}",
+          "orderIndex": 3,
+          "type": "interactive",
+          "estimatedMinutes": 50,
+          "isRequired": true
+        }
+      ]
+    },
+    {
+      "title": "Micro:bit Adventures",
+      "description": "Program real hardware with our virtual Micro:bit simulator.",
+      "ageGroup": "12-17",
+      "difficulty": "beginner",
+      "category": "robotics",
+      "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400",
+      "estimatedHours": 10,
+      "isActive": true,
+      "lessons": [
+        {
+          "title": "LED Matrix Fun",
+          "description": "Create patterns and animations on the LED display",
+          "content": "{\"type\":\"microbit\",\"code\":\"basic.showString('Hello');\\nbasic.pause(1000);\\nbasic.showIcon(IconNames.Heart);\",\"instructions\":\"Create your own message and icon sequence.\"}",
+          "orderIndex": 1,
+          "type": "interactive",
+          "estimatedMinutes": 25,
+          "isRequired": true
+        },
+        {
+          "title": "Button Controls",
+          "description": "Respond to button presses and create interactive programs",
+          "content": "{\"type\":\"microbit\",\"code\":\"input.onButtonPressed(Button.A, function () {\\n    basic.showIcon(IconNames.Happy);\\n});\\n\\ninput.onButtonPressed(Button.B, function () {\\n    basic.showIcon(IconNames.Sad);\\n});\",\"instructions\":\"Create different reactions for different button combinations.\"}",
+          "orderIndex": 2,
+          "type": "interactive",
+          "estimatedMinutes": 30,
+          "isRequired": true
+        },
+        {
+          "title": "Motion Sensor Magic",
+          "description": "Use the accelerometer to detect movement and gestures",
+          "content": "{\"type\":\"microbit\",\"code\":\"input.onGesture(Gesture.Shake, function () {\\n    basic.showNumber(randint(1, 6));\\n    basic.pause(2000);\\n    basic.clearScreen();\\n});\",\"instructions\":\"Create a digital dice that shows random numbers when shaken.\"}",
+          "orderIndex": 3,
+          "type": "interactive",
+          "estimatedMinutes": 35,
+          "isRequired": true
+        }
+      ]
+    }
+  ],
+  "roboticsActivities": [
+    {
+      "title": "Light Maze Challenge",
+      "description": "Guide your robot through a maze using light sensors and logic.",
+      "type": "maze",
+      "difficulty": "easy",
+      "ageGroup": "6-11",
+      "instructions": "{\"goal\":\"Reach the exit by following the light path\",\"tools\":[\"light_sensor\",\"move_forward\",\"turn_left\",\"turn_right\"],\"hints\":[\"Light areas are safe to move through\",\"Dark areas should be avoided\"]}",
+      "solution": "{\"blocks\":[{\"type\":\"repeat\",\"times\":\"until_goal\"},{\"type\":\"if\",\"condition\":\"light_detected\"},{\"type\":\"move_forward\"},{\"type\":\"else\"},{\"type\":\"turn_right\"}]}",
+      "estimatedMinutes": 15,
+      "points": 100,
+      "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300",
+      "isActive": true
+    },
+    {
+      "title": "Color Sorting Robot",
+      "description": "Program a robot to sort objects by color using sensors.",
+      "type": "challenge",
+      "difficulty": "medium",
+      "ageGroup": "12-17",
+      "instructions": "{\"goal\":\"Sort colored blocks into the correct bins\",\"tools\":[\"color_sensor\",\"gripper\",\"move_to_position\",\"drop_object\"],\"constraints\":[\"Red blocks go to bin 1\",\"Blue blocks go to bin 2\",\"Green blocks go to bin 3\"]}",
+      "solution": "{\"code\":\"while (objects_remaining()) {\\n  object = pick_up_object();\\n  color = scan_color(object);\\n  if (color === 'red') {\\n    move_to_bin(1);\\n  } else if (color === 'blue') {\\n    move_to_bin(2);\\n  } else if (color === 'green') {\\n    move_to_bin(3);\\n  }\\n  drop_object();\\n}\"}",
+      "estimatedMinutes": 25,
+      "points": 200,
+      "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300",
+      "isActive": true
+    },
+    {
+      "title": "Musical Robot Orchestra",
+      "description": "Create a robot that plays melodies and responds to sound.",
+      "type": "puzzle",
+      "difficulty": "medium",
+      "ageGroup": "6-11",
+      "instructions": "{\"goal\":\"Program your robot to play a simple melody\",\"tools\":[\"play_note\",\"pause\",\"repeat\",\"sound_sensor\"],\"challenge\":\"Make it respond to clapping by changing tempo\"}",
+      "solution": "{\"melody\":[\"C4\",\"D4\",\"E4\",\"F4\",\"G4\"],\"rhythm\":[\"quarter\",\"quarter\",\"half\",\"quarter\",\"whole\"],\"interaction\":\"if (sound_detected()) { tempo = tempo * 1.5; }\"}",
+      "estimatedMinutes": 20,
+      "points": 150,
+      "imageUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+      "isActive": true
+    },
+    {
+      "title": "Smart Home Assistant",
+      "description": "Build a robot that controls lights and responds to voice commands.",
+      "type": "challenge",
+      "difficulty": "hard",
+      "ageGroup": "12-17",
+      "instructions": "{\"goal\":\"Create a voice-controlled smart home system\",\"tools\":[\"microphone\",\"led_control\",\"voice_recognition\",\"wifi_communication\"],\"commands\":[\"'lights on' - turn on all lights\",\"'lights off' - turn off all lights\",\"'bedroom light' - control specific room\"]}",
+      "solution": "{\"code\":\"function processVoiceCommand(command) {\\n  if (command.includes('lights on')) {\\n    turnOnLights('all');\\n  } else if (command.includes('lights off')) {\\n    turnOffLights('all');\\n  } else if (command.includes('bedroom')) {\\n    toggleLight('bedroom');\\n  }\\n  speak('Command executed');\\n}\"}",
+      "estimatedMinutes": 40,
+      "points": 300,
+      "imageUrl": "https://images.unsplash.com/photo-1558618047-3c8c76ca7f09?w=300",
+      "isActive": true
+    }
+  ]
+}

@@ -72,7 +72,7 @@ function AppContent() {
     return (
       <Switch>
         <Route path="/pricing">
-          <PricingPage onAuthModalOpen={openAuthModal} />
+          <PricingPage />
         </Route>
         <Route path="/">
           {user ? renderDashboard() : <HomePage onAuthModalOpen={openAuthModal} />}
@@ -90,7 +90,7 @@ function AppContent() {
       case 'parent':
         return <ParentDashboard />;
       case 'school_admin':
-        return <SchoolAdminDashboard user={user} />;
+        return <SchoolAdminDashboard user={user as any} />;
       default:
         return <HomePage onAuthModalOpen={openAuthModal} />;
     }

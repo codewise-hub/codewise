@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodewiseHub - Enhanced Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .primary-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .highschool-gradient {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .blockly-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .monaco-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .age-selector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .age-selector:hover {
+            transform: scale(1.05);
+        }
+        
+        .robot-simulator {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-avatar {
+            width: 60px;
+            height: 60px;
+            background: #4299e1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+        
+        .package-card {
+            transition: all 0.3s ease;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .section {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .ai-chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-highlight {
+            border: 3px solid #3b82f6;
+            position: relative;
+        }
+        
+        .pricing-highlight::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3b82f6;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .editor-tabs {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        
+        .editor-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .editor-tab.active {
+            background: white;
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .editor-tab:hover {
+            background: #e5e7eb;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        .notification.info {
+            background: #3b82f6;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            background-color: white;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #059669;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .btn-outline:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .achievement-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+        
+        .achievement-badge.earned {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .project-content {
+            padding: 1rem;
+        }
+        
+        .project-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .project-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .nav-link {
+            color: #6b7280;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            color: #3b82f6;
+        }
+        
+        .nav-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 1rem;
+        }
+        
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+        }
+        
+        .section-visible {
+            display: block;
+        }
+        
+        .section-hidden {
+            display: none;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1;
+        }
+        
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            margin: 4px;
+            cursor: pointer;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pricing-card.featured {
+            border-color: #3b82f6;
+            position: relative;
+        }
+        
+        .pricing-card.featured::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3b82f6;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .price-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin: 1rem 0;
+        }
+        
+        .price-period {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: normal;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        @media (max-width: 640px) {
+            .auth-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-800">CodewiseHub</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button class="nav-link active" onclick="showSection('home')">
+                            <i class="fas fa-home mr-2"></i>Home
+                        </button>
+                        <button class="nav-link" onclick="showSection('courses')">
+                            <i class="fas fa-book mr-2"></i>Courses
+                        </button>
+                        <button class="nav-link" onclick="showSection('pricing')">
+                            <i class="fas fa-credit-card mr-2"></i>Pricing
+                        </button>
+                        <button class="nav-link" onclick="showSection('about')">
+                            <i class="fas fa-info-circle mr-2"></i>About
+                        </button>
+                        <div id="authButtons" class="auth-buttons">
+                            <button class="btn btn-primary" onclick="showRegistration()">
+                                <i class="fas fa-user-plus mr-2"></i>Create Account
+                            </button>
+                            <button class="btn btn-outline" onclick="showLogin()">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                            </button>
+                        </div>
+                        <div id="userMenu" class="dropdown hidden">
+                            <div class="user-avatar">
+                                <span id="userInitial">U</span>
+                            </div>
+                            <div class="dropdown-content">
+                                <a href="#" onclick="showSection('dashboard')">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                                </a>
+                                <a href="#" onclick="showSection('profile')">
+                                    <i class="fas fa-user mr-2"></i>Profile
+                                </a>
+                                <a href="#" onclick="showSection('settings')">
+                                    <i class="fas fa-cog mr-2"></i>Settings
+                                </a>
+                                <a href="#" onclick="signOut()">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden mobile-menu">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section section-visible">
+        <!-- Hero Section -->
+        <div class="gradient-bg py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                        Explore. Learn. Code.
+                        <span class="block text-yellow-300">Together!</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+                        Dive into fun, interactive coding adventures designed for young minds. 
+                        Build amazing projects, learn with AI, and become a coding hero!
+                    </p>
+                    <div class="auth-buttons">
+                        <button class="btn btn-primary bounce-animation text-lg px-8 py-3" onclick="showRegistration()">
+                            <i class="fas fa-rocket mr-2"></i>Start Learning Now
+                        </button>
+                        <button class="btn btn-outline text-lg px-8 py-3 text-white border-white hover:bg-white hover:text-blue-600" onclick="showLogin()">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Age Selection -->
+        <div class="py-16 bg-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Learning Path!</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Select your education level to discover learning paths designed just for you
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- Primary School (Grades R-7) -->
+                    <div class="age-selector primary-gradient p-8 rounded-2xl shadow-lg text-center" onclick="showAgeContent('primary')">
+                        <div class="text-6xl mb-4">🧒</div>
+                        <h3 class="text-2xl font-bold text-purple-800 mb-4">Primary Coders</h3>
+                        <p class="text-purple-700 mb-4">Grades R-7 (Ages 5-13)</p>
+                        <div class="text-sm text-purple-600 mb-6">
+                            <i class="fas fa-puzzle-piece mr-2"></i>Drag & Drop Programming<br>
+                            <i class="fas fa-robot mr-2"></i>Robot Adventures<br>
+                            <i class="fas fa-palette mr-2"></i>Creative Coding Art
+                        </div>
+                        <button class="btn btn-primary">
+                            Start My Journey! 🚀
+                        </button>
+                    </div>
+
+                    <!-- High School (Grades 8-12) -->
+                    <div class="age-selector highschool-gradient p-8 rounded-2xl shadow-lg text-center" onclick="showAgeContent('highschool')">
+                        <div class="text-6xl mb-4">👨‍💻</div>
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4">High School Developers</h3>
+                        <p class="text-blue-700 mb-4">Grades 8-12 (Ages 14-18)</p>
+                        <div class="text-sm text-blue-600 mb-6">
+                            <i class="fas fa-code mr-2"></i>Professional Programming<br>
+                            <i class="fas fa-brain mr-2"></i>AI & Prompt Engineering<br>
+                            <i class="fas fa-trophy mr-2"></i>Career Preparation
+                        </div>
+                        <button class="btn btn-primary">
+                            Level Up! 💪
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose CodewiseHub?</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Comprehensive learning platform with age-appropriate content and advanced features
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="feature-icon text-blue-500">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Interactive Coding</h3>
+                        <p class="text-gray-600">Visual blocks for beginners, Monaco editor for advanced learners</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="feature-icon text-green-500">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Robot Programming</h3>
+                        <p class="text-gray-600">Control virtual robots with drag-and-drop programming</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="feature-icon text-purple-500">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">AI Learning Assistant</h3>
+                        <p class="text-gray-600">Personalized help and AI-powered content generation</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="feature-icon text-orange-500">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Progress Tracking</h3>
+                        <p class="text-gray-600">Monitor learning progress and achievements</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="feature-icon text-red-500">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Multi-Role Support</h3>
+                        <p class="text-gray-600">Students, teachers, and parents all in one platform</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="feature-icon text-indigo-500">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">School Integration</h3>
+                        <p class="text-gray-600">Seamlessly integrate with primary and high school systems</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="section section-hidden">
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Courses</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Age-appropriate curriculum designed for different skill levels
+                    </p>
+                    <button class="btn btn-secondary mt-4" onclick="showSection('home')">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
+
+                <!-- Course Filter -->
+                <div class="flex justify-center mb-8">
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700" onclick="filterCourses('all')">
+                            All Courses
+                        </button>
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700" onclick="filterCourses('primary')">
+                            Primary (R-7)
+                        </button>
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700" onclick="filterCourses('highschool')">
+                            High School (8-12)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Primary Courses -->
+                <div id="primary-courses" class="course-group">
+                    <h3 class="text-2xl font-bold text-center mb-8 text-purple-600">Primary Coders Courses</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center">
+                                <i class="fas fa-puzzle-piece text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Block Programming Basics</h3>
+                                <p class="text-gray-600 mb-4">Learn programming concepts using colorful blocks! No typing required - just drag and drop.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>6 lessons
+                                    </span>
+                                    <span class="text-sm text-green-600 font-bold">FREE</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('blocks-primary')">
+                                    Start Playing! 🎮
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Robot Adventures</h3>
+                                <p class="text-gray-600 mb-4">Control virtual robots and make them move, dance, and solve puzzles!</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>8 lessons
+                                    </span>
+                                    <span class="text-sm text-blue-600 font-bold">R89/month</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('robot-primary')">
+                                    Meet My Robot! 🤖
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center">
+                                <i class="fas fa-palette text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Creative Coding Art</h3>
+                                <p class="text-gray-600 mb-4">Create beautiful digital art using code! Draw patterns and animations.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>10 lessons
+                                    </span>
+                                    <span class="text-sm text-blue-600 font-bold">R89/month</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('art-primary')">
+                                    Create Art! 🎨
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High School Courses -->
+                <div id="highschool-courses" class="course-group mt-12">
+                    <h3 class="text-2xl font-bold text-center mb-8 text-blue-600">High School Developer Courses</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center">
+                                <i class="fas fa-globe text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Web Development</h3>
+                                <p class="text-gray-600 mb-4">Learn HTML, CSS, and JavaScript to build modern websites and web applications.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>12 lessons
+                                    </span>
+                                    <span class="text-sm text-green-600 font-bold">FREE</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('web-dev')">
+                                    Start Coding
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                                <i class="fas fa-brain text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">AI & Prompt Engineering</h3>
+                                <p class="text-gray-600 mb-4">Master the art of communicating with AI systems and building AI-powered applications.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>8 lessons
+                                    </span>
+                                    <span class="text-sm text-blue-600 font-bold">R179/month</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('ai-prompt')">
+                                    Learn AI
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div class="h-48 bg-gradient-to-r from-indigo-400 to-purple-500 flex items-center justify-center">
+                                <i class="fab fa-python text-white text-6xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Python Programming</h3>
+                                <p class="text-gray-600 mb-4">Learn Python, one of the most popular programming languages in the world.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-1"></i>15 lessons
+                                    </span>
+                                    <span class="text-sm text-blue-600 font-bold">R179/month</span>
+                                </div>
+                                <button class="w-full mt-4 btn btn-primary" onclick="openCourse('python')">
+                                    Start Python
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Coding Lab -->
+                <div class="mt-16 bg-gray-100 rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-center mb-8">Interactive Coding Lab</h3>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Primary School Editor -->
+                        <div id="primary-editor" class="bg-white rounded-xl p-6">
+                            <h4 class="text-xl font-bold mb-4">Visual Programming (Primary)</h4>
+                            <div class="editor-tabs">
+                                <div class="editor-tab active" onclick="switchTab('blocks')">
+                                    <i class="fas fa-puzzle-piece mr-2"></i>Blocks
+                                </div>
+                                <div class="editor-tab" onclick="switchTab('robot')">
+                                    <i class="fas fa-robot mr-2"></i>Robot
+                                </div>
+                            </div>
+                            <div id="blocks-tab" class="tab-content">
+                                <div id="primaryBlockly" class="blockly-container mb-4"></div>
+                                <div class="flex gap-4">
+                                    <button class="btn btn-success" onclick="runPrimaryCode()">
+                                        <i class="fas fa-play mr-2"></i>Run
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearPrimaryCode()">
+                                        <i class="fas fa-trash mr-2"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="robot-tab" class="tab-content hidden">
+                                <div class="robot-simulator rounded-lg mb-4">
+                                    <div id="robotAvatar" class="robot-avatar">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <button class="btn btn-success" onclick="runRobotCode()">
+                                        <i class="fas fa-robot mr-2"></i>Run Robot
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="resetRobot()">
+                                        <i class="fas fa-redo mr-2"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- High School Editor -->
+                        <div id="highschool-editor" class="bg-white rounded-xl p-6">
+                            <h4 class="text-xl font-bold mb-4">Professional IDE (High School)</h4>
+                            <div class="editor-tabs">
+                                <div class="editor-tab active" onclick="switchTab('monaco')">
+                                    <i class="fas fa-code mr-2"></i>Code Editor
+                                </div>
+                                <div class="editor-tab" onclick="switchTab('ai')">
+                                    <i class="fas fa-brain mr-2"></i>AI Assistant
+                                </div>
+                            </div>
+                            <div id="monaco-tab" class="tab-content">
+                                <div id="monacoEditor" class="monaco-container mb-4"></div>
+                                <div class="flex gap-4">
+                                    <button class="btn btn-success" onclick="runMonacoCode()">
+                                        <i class="fas fa-play mr-2"></i>Execute
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearMonacoCode()">
+                                        <i class="fas fa-trash mr-2"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="ai-tab" class="tab-content hidden">
+                                <div class="ai-chat-container bg-gray-50 rounded-lg p-4 mb-4">
+                                    <div class="flex items-start mb-4">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <div class="bg-blue-100 rounded-lg p-3 max-w-sm">
+                                            <p class="text-sm">Hi! I'm your AI coding assistant. How can I help you today?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="aiChatInput" placeholder="Ask me about coding..." class="flex-1 form-input">
+                                    <button class="btn btn-primary" onclick="sendAIMessage()">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section section-hidden">
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Package</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Flexible pricing options for students, teachers, and parents
+                    </p>
+                    <button class="btn btn-secondary mt-4" onclick="showSection('home')">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
+
+                <!-- Student Packages -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-center mb-8">Student Packages</h3>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">Basic</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R0<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        3 Basic Courses
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Visual Block Editor
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Basic Progress Tracking
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-secondary" onclick="selectPackage('student', 'basic')">
+                                    Get Started Free
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-blue-500 overflow-hidden pricing-highlight">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">Premium</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R179<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        All Courses
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Monaco Editor
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        AI Tutor & Assistant
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-primary" onclick="selectPackage('student', 'premium')">
+                                    Start Premium
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">Family</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R329<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Up to 3 Students
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        All Premium Features
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Parent Dashboard
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-success" onclick="selectPackage('student', 'family')">
+                                    Choose Family
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teacher Packages -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-center mb-8">Teacher Packages</h3>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">Individual</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R249<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Up to 30 Students
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Basic AI Content Tools
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Student Progress Tracking
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-secondary" onclick="selectPackage('teacher', 'individual')">
+                                    Start Teaching
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-green-500 overflow-hidden">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">Primary School</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R1,499<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Unlimited Students
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Advanced AI Tools
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        School Analytics
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-success" onclick="selectPackage('teacher', 'primary')">
+                                    For Primary Schools
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card bg-white rounded-xl shadow-lg border-2 border-purple-500 overflow-hidden">
+                            <div class="p-8">
+                                <h4 class="text-xl font-bold text-gray-800 mb-2">High School</h4>
+                                <div class="text-3xl font-bold text-gray-800 mb-4">
+                                    R1,999<span class="text-sm font-normal text-gray-500">/month</span>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Unlimited Students
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Professional AI Tools
+                                    </li>
+                                    <li class="flex items-center text-gray-600">
+                                        <i class="fas fa-check text-green-500 mr-3"></i>
+                                        Career Preparation
+                                    </li>
+                                </ul>
+                                <button class="w-full btn btn-primary" onclick="selectPackage('teacher', 'highschool')">
+                                    For High Schools
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section section-hidden">
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">About CodewiseHub</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                        We're passionate about making coding education accessible, engaging, and effective for learners of all ages.
+                    </p>
+                    <button class="btn btn-secondary mt-4" onclick="showSection('home')">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
+                        <p class="text-gray-600 mb-6">
+                            To democratize coding education by providing age-appropriate, interactive learning experiences that prepare students for the digital future.
+                        </p>
+                        
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Why Choose Us?</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+                                <span class="text-gray-600">Age-appropriate curriculum designed by education experts</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+                                <span class="text-gray-600">Interactive coding environments tailored for different skill levels</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+                                <span class="text-gray-600">AI-powered personalized learning assistance</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4">Our Impact</h3>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-2">10,000+</div>
+                                <div class="text-sm opacity-90">Students Enrolled</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-2">500+</div>
+                                <div class="text-sm opacity-90">Teachers</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-2">50+</div>
+                                <div class="text-sm opacity-90">Schools</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-2">95%</div>
+                                <div class="text-sm opacity-90">Satisfaction Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section section-hidden">
+        <div class="py-8 bg-white">
+            <div class="dashboard-container">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Dashboard</h2>
+                    <button class="btn btn-secondary" onclick="showSection('home')">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
+
+                <div class="text-center py-16">
+                    <div class="text-6xl mb-4">🚀</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Welcome to Your Dashboard!</h3>
+                    <p class="text-gray-600 mb-8">Track your progress, view courses, and manage your learning journey.</p>
+                    <div class="auth-buttons">
+                        <button class="btn btn-primary" onclick="showSection('courses')">
+                            <i class="fas fa-book mr-2"></i>View Courses
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSection('pricing')">
+                            <i class="fas fa-credit-card mr-2"></i>Upgrade Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registrationModal')">&times;</span>
+            <h2 class="text-2xl font-bold mb-6">Create Your Account</h2>
+            
+            <div class="form-group">
+                <label class="form-label">I am a...</label>
+                <select id="userRole" class="form-select" onchange="showRoleFields()">
+                    <option value="">Select Role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="parent">Parent</option>
+                </select>
+            </div>
+
+            <div id="commonFields" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="fullName" class="form-input" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Create a password">
+                </div>
+            </div>
+
+            <div id="studentFields" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">Age Group</label>
+                    <select id="ageGroup" class="form-select">
+                        <option value="primary">Primary School (Grades R-7)</option>
+                        <option value="highschool">High School (Grades 8-12)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Grade</label>
+                    <select id="grade" class="form-select">
+                        <option value="R">Grade R</option>
+                        <option value="1">Grade 1</option>
+                        <option value="2">Grade 2</option>
+                        <option value="3">Grade 3</option>
+                        <option value="4">Grade 4</option>
+                        <option value="5">Grade 5</option>
+                        <option value="6">Grade 6</option>
+                        <option value="7">Grade 7</option>
+                        <option value="8">Grade 8</option>
+                        <option value="9">Grade 9</option>
+                        <option value="10">Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Package</label>
+                    <select id="studentPackage" class="form-select">
+                        <option value="basic">Basic (R0/month)</option>
+                        <option value="premium">Premium (R179/month)</option>
+                        <option value="family">Family (R329/month)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="teacherFields" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">School Name</label>
+                    <input type="text" id="schoolName" class="form-input" placeholder="Enter school name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <input type="text" id="subject" class="form-input" placeholder="e.g., Computer Science">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Package</label>
+                    <select id="teacherPackage" class="form-select">
+                        <option value="individual">Individual (R249/month)</option>
+                        <option value="primary">Primary School (R1,499/month)</option>
+                        <option value="highschool">High School (R1,999/month)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="parentFields" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">Child's Name</label>
+                    <input type="text" id="childName" class="form-input" placeholder="Enter child's name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Package</label>
+                    <select id="parentPackage" class="form-select">
+                        <option value="single">Single Child (R89/month)</option>
+                        <option value="family">Family Plan (R149/month)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button id="registerBtn" class="btn btn-primary w-full" onclick="registerUser()">
+                    <i class="fas fa-user-plus mr-2"></i>Create Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2 class="text-2xl font-bold mb-6">Sign In</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary w-full" onclick="loginUser()">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                </button>
+            </div>
+            <div class="text-center mt-4">
+                <a href="#" class="text-blue-600 hover:underline">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('courseModal')">&times;</span>
+            <div id="courseContent"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentSection = 'home';
+        let primaryWorkspace = null;
+        let monacoEditor = null;
+        let robotPosition = { x: 50, y: 50 };
+        let robotDirection = 0;
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9Hc-DuH8jXk7X8686A2o2jbvPqVd77no",
+            authDomain: "codewise-hub-production.firebaseapp.com",
+            projectId: "codewise-hub-production",
+            storageBucket: "codewise-hub-production.firebasestorage.app",
+            messagingSenderId: "1067822471514",
+            appId: "1:1067822471514:web:4ac831dede5b3bf49afb63",
+            measurementId: "G-189VFGNKXS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            setupAuthStateListener();
+            updateActiveNavLink();
+            setTimeout(() => {
+                initializeBlockly();
+                initializeMonaco();
+            }, 1000);
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Modal close on outside click
+            window.addEventListener('click', function(event) {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Enter key for forms
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const activeModal = document.querySelector('.modal[style*="block"]');
+                    if (activeModal) {
+                        if (activeModal.id === 'loginModal') {
+                            loginUser();
+                        } else if (activeModal.id === 'registrationModal') {
+                            registerUser();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Setup authentication state listener
+        function setupAuthStateListener() {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserProfile();
+                    showUserInterface();
+                } else {
+                    currentUser = null;
+                    showAuthInterface();
+                }
+            });
+        }
+
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    updateUserInterface(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        // Update user interface
+        function updateUserInterface(userData) {
+            const userInitial = document.getElementById('userInitial');
+            if (userInitial) {
+                userInitial.textContent = (userData.displayName || 'U').charAt(0).toUpperCase();
+            }
+        }
+
+        // Show user interface (authenticated)
+        function showUserInterface() {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (authButtons) authButtons.style.display = 'none';
+            if (userMenu) userMenu.classList.remove('hidden');
+        }
+
+        // Show auth interface (not authenticated)
+        function showAuthInterface() {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userMenu) userMenu.classList.add('hidden');
+        }
+
+        // Update active navigation link
+        function updateActiveNavLink() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.onclick && link.onclick.toString().includes(currentSection)) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('section-visible');
+                section.classList.add('section-hidden');
+            });
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('section-hidden');
+                targetSection.classList.add('section-visible');
+            }
+            
+            currentSection = sectionId;
+            updateActiveNavLink();
+        }
+
+        // Show age content
+        function showAgeContent(ageGroup) {
+            showSection('courses');
+            if (ageGroup === 'primary') {
+                filterCourses('primary');
+            } else if (ageGroup === 'highschool') {
+                filterCourses('highschool');
+            }
+        }
+
+        // Filter courses
+        function filterCourses(filter) {
+            const primaryCourses = document.getElementById('primary-courses');
+            const highschoolCourses = document.getElementById('highschool-courses');
+            
+            if (filter === 'all') {
+                primaryCourses.style.display = 'block';
+                highschoolCourses.style.display = 'block';
+            } else if (filter === 'primary') {
+                primaryCourses.style.display = 'block';
+                highschoolCourses.style.display = 'none';
+            } else if (filter === 'highschool') {
+                primaryCourses.style.display = 'none';
+                highschoolCourses.style.display = 'block';
+            }
+        }
+
+        // Select package
+        function selectPackage(userType, packageType) {
+            showNotification(`Selected ${userType} ${packageType} package!`, 'success');
+            showRegistration();
+        }
+
+        // Show registration modal
+        function showRegistration() {
+            document.getElementById('registrationModal').style.display = 'block';
+        }
+
+        // Show login modal
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Show role-specific fields
+        function showRoleFields() {
+            const role = document.getElementById('userRole').value;
+            const commonFields = document.getElementById('commonFields');
+            const studentFields = document.getElementById('studentFields');
+            const teacherFields = document.getElementById('teacherFields');
+            const parentFields = document.getElementById('parentFields');
+            
+            // Hide all fields first
+            [commonFields, studentFields, teacherFields, parentFields].forEach(field => {
+                if (field) field.classList.add('hidden');
+            });
+            
+            // Show common fields for all roles
+            if (role && commonFields) {
+                commonFields.classList.remove('hidden');
+            }
+            
+            // Show role-specific fields
+            if (role === 'student' && studentFields) {
+                studentFields.classList.remove('hidden');
+            } else if (role === 'teacher' && teacherFields) {
+                teacherFields.classList.remove('hidden');
+            } else if (role === 'parent' && parentFields) {
+                parentFields.classList.remove('hidden');
+            }
+        }
+
+        // Register user
+        async function registerUser() {
+            try {
+                const role = document.getElementById('userRole').value;
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                if (!role || !fullName || !email || !password) {
+                    showNotification('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                showNotification('Creating account...', 'info');
+                
+                // Create authentication account
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Create user profile
+                const userProfile = {
+                    role: role,
+                    email: email,
+                    displayName: fullName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add role-specific fields
+                if (role === 'student') {
+                    userProfile.ageGroup = document.getElementById('ageGroup').value;
+                    userProfile.grade = document.getElementById('grade').value;
+                    userProfile.package = document.getElementById('studentPackage').value;
+                } else if (role === 'teacher') {
+                    userProfile.schoolName = document.getElementById('schoolName').value;
+                    userProfile.subject = document.getElementById('subject').value;
+                    userProfile.package = document.getElementById('teacherPackage').value;
+                } else if (role === 'parent') {
+                    userProfile.childName = document.getElementById('childName').value;
+                    userProfile.package = document.getElementById('parentPackage').value;
+                }
+                
+                // Save to Firestore
+                await db.collection('users').doc(user.uid).set(userProfile);
+                
+                showNotification('Account created successfully!', 'success');
+                closeModal('registrationModal');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showNotification(`Registration failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Login user
+        async function loginUser() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!email || !password) {
+                    showNotification('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                showNotification('Signing in...', 'info');
+                
+                await auth.signInWithEmailAndPassword(email, password);
+                
+                showNotification('Successfully signed in!', 'success');
+                closeModal('loginModal');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification(`Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Sign out user
+        async function signOut() {
+            try {
+                await auth.signOut();
+                showNotification('Successfully signed out', 'success');
+                showSection('home');
+            } catch (error) {
+                console.error('Sign out error:', error);
+                showNotification('Error signing out', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize Blockly workspace
+        function initializeBlockly() {
+            if (document.getElementById('primaryBlockly') && typeof Blockly !== 'undefined') {
+                try {
+                    primaryWorkspace = Blockly.inject('primaryBlockly', {
+                        toolbox: `
+                        <xml>
+                            <category name="Logic" colour="210">
+                                <block type="controls_if"></block>
+                                <block type="logic_compare"></block>
+                            </category>
+                            <category name="Math" colour="230">
+                                <block type="math_number"></block>
+                                <block type="math_arithmetic"></block>
+                            </category>
+                            <category name="Text" colour="160">
+                                <block type="text"></block>
+                                <block type="text_print"></block>
+                            </category>
+                        </xml>
+                        `,
+                        grid: {
+                            spacing: 20,
+                            length: 3,
+                            colour: '#ccc',
+                            snap: true
+                        }
+                    });
+                } catch (error) {
+                    console.error('Blockly initialization error:', error);
+                }
+            }
+        }
+
+        // Initialize Monaco editor
+        function initializeMonaco() {
+            if (document.getElementById('monacoEditor')) {
+                try {
+                    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' }});
+                    require(['vs/editor/editor.main'], function() {
+                        monacoEditor = monaco.editor.create(document.getElementById('monacoEditor'), {
+                            value: '// Welcome to CodewiseHub!\nconsole.log("Hello, World!");',
+                            language: 'javascript',
+                            theme: 'vs-dark',
+                            fontSize: 14,
+                            minimap: { enabled: false },
+                            automaticLayout: true
+                        });
+                    });
+                } catch (error) {
+                    console.error('Monaco initialization error:', error);
+                }
+            }
+        }
+
+        // Switch editor tabs
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.editor-tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.add('hidden'));
+            
+            const activeTab = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const activeContent = document.getElementById(tabName + '-tab');
+            
+            if (activeTab) activeTab.classList.add('active');
+            if (activeContent) activeContent.classList.remove('hidden');
+        }
+
+        // Run primary code
+        function runPrimaryCode() {
+            showNotification('Running primary code...', 'success');
+        }
+
+        // Clear primary code
+        function clearPrimaryCode() {
+            if (primaryWorkspace) {
+                primaryWorkspace.clear();
+            }
+            showNotification('Code cleared', 'info');
+        }
+
+        // Run Monaco code
+        function runMonacoCode() {
+            if (monacoEditor) {
+                try {
+                    const code = monacoEditor.getValue();
+                    eval(code);
+                    showNotification('Code executed successfully!', 'success');
+                } catch (error) {
+                    showNotification('Error executing code', 'error');
+                }
+            }
+        }
+
+        // Clear Monaco code
+        function clearMonacoCode() {
+            if (monacoEditor) {
+                monacoEditor.setValue('// Start coding here!\nconsole.log("Hello, World!");');
+            }
+            showNotification('Code cleared', 'info');
+        }
+
+        // Run robot code
+        function runRobotCode() {
+            showNotification('Robot code executed!', 'success');
+        }
+
+        // Reset robot
+        function resetRobot() {
+            showNotification('Robot reset', 'info');
+        }
+
+        // Send AI message
+        function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatContainer = document.querySelector('.ai-chat-container');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'flex items-start mb-4 justify-end';
+            userMessage.innerHTML = `
+                <div class="bg-blue-500 text-white rounded-lg p-3 max-w-sm">
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            chatContainer.appendChild(userMessage);
+            
+            // Generate AI response
+            setTimeout(() => {
+                const aiResponse = generateAIResponse(message);
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'flex items-start mb-4';
+                aiMessage.innerHTML = `
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-blue-100 rounded-lg p-3 max-w-sm">
+                        <p class="text-sm">${aiResponse}</p>
+                    </div>
+                `;
+                chatContainer.appendChild(aiMessage);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+            
+            input.value = '';
+        }
+
+        // Generate AI response
+        function generateAIResponse(userMessage) {
+            const responses = {
+                'hello': 'Hello! I\'m your AI coding assistant. How can I help you today?',
+                'help': 'I can help you with coding concepts, debugging, and project ideas. What would you like to learn?',
+                'javascript': 'JavaScript is a versatile programming language! What specific aspect interests you?',
+                'python': 'Python is excellent for beginners! It has clean syntax. Want to start with basics?',
+                'html': 'HTML is the foundation of web pages! Would you like to see some examples?',
+                'css': 'CSS styles web pages and makes them beautiful! Need help with styling?',
+                'default': 'That\'s an interesting question! I\'m here to help you learn coding. What would you like to explore?'
+            };
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            for (const [key, response] of Object.entries(responses)) {
+                if (lowerMessage.includes(key)) {
+                    return response;
+                }
+            }
+            
+            return responses.default;
+        }
+
+        // Open course
+        function openCourse(courseId) {
+            const courses = {
+                'blocks-primary': {
+                    title: 'Block Programming Basics',
+                    content: `
+                        <h3 class="text-2xl font-bold mb-4">Block Programming Basics</h3>
+                        <p class="mb-4">Learn programming concepts using colorful blocks!</p>
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-bold mb-2">What you'll learn:</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>How to drag and drop code blocks</li>
+                                <li>Basic programming concepts</li>
+                                <li>Creating simple animations</li>
+                                <li>Problem-solving with blocks</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" onclick="closeModal('courseModal')">Start Learning</button>
+                    `
+                },
+                'web-dev': {
+                    title: 'Web Development',
+                    content: `
+                        <h3 class="text-2xl font-bold mb-4">Web Development</h3>
+                        <p class="mb-4">Learn to build modern websites with HTML, CSS, and JavaScript.</p>
+                        <div class="bg-orange-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-bold mb-2">What you'll learn:</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>HTML structure and semantics</li>
+                                <li>CSS styling and layout</li>
+                                <li>JavaScript interactivity</li>
+                                <li>Responsive design</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" onclick="closeModal('courseModal')">Start Course</button>
+                    `
+                },
+                'ai-prompt': {
+                    title: 'AI & Prompt Engineering',
+                    content: `
+                        <h3 class="text-2xl font-bold mb-4">AI & Prompt Engineering</h3>
+                        <p class="mb-4">Master the art of communicating with AI systems effectively.</p>
+                        <div class="bg-purple-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-bold mb-2">What you'll learn:</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Understanding AI capabilities</li>
+                                <li>Crafting effective prompts</li>
+                                <li>Prompt optimization techniques</li>
+                                <li>Building AI-powered applications</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" onclick="closeModal('courseModal')">Start Course</button>
+                    `
+                }
+            };
+            
+            const course = courses[courseId] || courses['blocks-primary'];
+            document.getElementById('courseContent').innerHTML = course.content;
+            document.getElementById('courseModal').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjGDJ%2FRscrE18lfuUZJppNwv87ptyPAOxAiA%2BPfL9IvcysclcK5x8r5ZE1pWyVWSmJCWZPiJ%2B2efHayDaLTYfPjMZ9QZO6j4oOsnNafS6aHAk50uzxA1W40Z87pIdBC47mFADxI5BZylXoBX1wCo0RMRcMwfBJknY4%2FaXNDYWkg7yqFNM41mbEMX4zQX6EpajmGUNeZ5831qCzWjyLZ8HrGWTXjmsWoxnfhDh%2Ff%2F1A4b21JPl1gkoKt7mXaWnaIwONa9wOIxi%2F7xP7o9KTUnrhAGaQGgaPlL99B2BOtcLbrjDK9zu7Ukmbr7zfYg9DyH6Al3Fgs3ELm8FueLu9iuE2Nw%2Fq%2BLzU%2BpNpF%2BvOYXlk%2BxU4GPFD%2Bm9Ywfof3J4nyusi7gndXxN%2FI28m2srWmarsLT1pngj%2Br17edza3Ho0WUdnStdoWz9uSZ7hopNvhWs4Xg7bIRMFidVAuZQDAlzO%2B0ySjxHMilBoWP2%2BxL7mgwpz8FuQSZ5EdDey5KvJeK4olwMdua8KV4B1wa1ciGdzCI%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjGDJ/RscrE18lfuUZJppNwv87ptyPAOxAiA+PfL9IvcysclcK5x8r5ZE1pWyVWSmJCWZPiJ+2efHayDaLTYfPjMZ9QZO6j4oOsnNafS6aHAk50uzxA1W40Z87pIdBC47mFADxI5BZylXoBX1wCo0RMRcMwfBJknY4/aXNDYWkg7yqFNM41mbEMX4zQX6EpajmGUNeZ5831qCzWjyLZ8HrGWTXjmsWoxnfhDh/f/1A4b21JPl1gkoKt7mXaWnaIwONa9wOIxi/7xP7o9KTUnrhAGaQGgaPlL99B2BOtcLbrjDK9zu7Ukmbr7zfYg9DyH6Al3Fgs3ELm8FueLu9iuE2Nw/q+LzU+pNpF+vOYXlk+xU4GPFD+m9Ywfof3J4nyusi7gndXxN/I28m2srWmarsLT1pngj+r17edza3Ho0WUdnStdoWz9uSZ7hopNvhWs4Xg7bIRMFidVAuZQDAlzO+0ySjxHMilBoWP2+xL7mgwpz8FuQSZ5EdDey5KvJeK4olwMdua8KV4B1wa1ciGdzCI=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

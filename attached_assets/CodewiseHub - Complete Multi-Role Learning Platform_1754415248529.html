@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodewiseHub - Complete Multi-Role Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .kid-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .teen-gradient {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .blockly-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .monaco-container {
+            height: 500px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .age-selector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .age-selector:hover {
+            transform: scale(1.05);
+        }
+        
+        .robot-simulator {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-avatar {
+            width: 60px;
+            height: 60px;
+            background: #4299e1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .role-selector {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .role-selector:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .role-student { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .role-teacher { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .role-parent { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 100vh;
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 40;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .main-content.sidebar-open {
+            margin-left: 250px;
+        }
+        
+        .simple-block {
+            background: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .simple-block:hover {
+            background: #3182ce;
+            transform: scale(1.05);
+        }
+        
+        .robot-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .robot-control-btn {
+            background: #48bb78;
+            color: white;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .robot-control-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+        
+        .enhanced-robot-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .enhanced-robot-btn {
+            background: #4299e1;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .enhanced-robot-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        
+        .robot-maze {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .obstacle {
+            position: absolute;
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        
+        .treasure {
+            position: absolute;
+            color: #f6e05e;
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .challenge-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+            .main-content.sidebar-open {
+                margin-left: 0;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-800">CodewiseHub</span>
+                    </div>
+                </div>
+                
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Home</a>
+                        <a href="#features" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Features</a>
+                        <a href="#pricing" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Pricing</a>
+                        <a href="#about" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">About</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div id="authButtons" class="flex space-x-2">
+                        <button onclick="showSignIn()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </button>
+                        <button onclick="showSignUp()" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
+                        </button>
+                    </div>
+                    
+                    <div id="userInfo" class="hidden flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div id="userAvatar" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div id="userName" class="text-sm font-medium text-gray-700">User</div>
+                                <div id="userRole" class="text-xs text-gray-500">Role</div>
+                            </div>
+                        </div>
+                        <button onclick="signOut()" class="text-red-600 hover:text-red-800 text-sm">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Authentication Modals -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <!-- Role Selection -->
+            <div id="roleSelection">
+                <h2 class="text-2xl font-bold text-center mb-6">Welcome to CodewiseHub</h2>
+                <h3 class="text-lg font-semibold text-center mb-4">Select Your Role</h3>
+                
+                <div class="space-y-4">
+                    <div class="role-selector role-student" onclick="selectRole('student')">
+                        <div class="text-center">
+                            <i class="fas fa-user-graduate text-3xl text-purple-600 mb-2"></i>
+                            <h4 class="text-lg font-bold">Student</h4>
+                            <p class="text-sm text-gray-600">Learn coding with fun interactive lessons</p>
+                        </div>
+                    </div>
+                    
+                    <div class="role-selector role-teacher" onclick="selectRole('teacher')">
+                        <div class="text-center">
+                            <i class="fas fa-chalkboard-teacher text-3xl text-blue-600 mb-2"></i>
+                            <h4 class="text-lg font-bold">Teacher</h4>
+                            <p class="text-sm text-gray-600">Create content and monitor student progress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="role-selector role-parent" onclick="selectRole('parent')">
+                        <div class="text-center">
+                            <i class="fas fa-heart text-3xl text-pink-600 mb-2"></i>
+                            <h4 class="text-lg font-bold">Parent</h4>
+                            <p class="text-sm text-gray-600">Monitor your child's learning progress</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sign In Form -->
+            <div id="signInForm" class="hidden">
+                <h2 class="text-2xl font-bold text-center mb-6">Sign In</h2>
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="signInEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="signInPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                        Sign In
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Don't have an account? 
+                        <button onclick="switchToSignUp()" class="text-blue-500 hover:text-blue-700">Sign up here</button>
+                    </p>
+                </div>
+                <button onclick="signInAnonymously()" class="w-full mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                    <i class="fas fa-user-secret mr-2"></i>Quick Start (Demo)
+                </button>
+                <button onclick="closeAuthModal()" class="w-full mt-2 text-gray-500 hover:text-gray-700 text-sm">
+                    ← Back to Role Selection
+                </button>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div id="signUpForm" class="hidden">
+                <h2 class="text-2xl font-bold text-center mb-6">Create Account</h2>
+                <form id="registerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="signUpName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="signUpEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="signUpPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div id="studentFields">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
+                            <select id="ageGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="kids">Little Coders (Ages 6-11)</option>
+                                <option value="teens">Teen Developers (Ages 12-18)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                        Create Account
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Already have an account? 
+                        <button onclick="switchToSignIn()" class="text-blue-500 hover:text-blue-700">Sign in here</button>
+                    </p>
+                </div>
+                <button onclick="closeAuthModal()" class="w-full mt-2 text-gray-500 hover:text-gray-700 text-sm">
+                    ← Back to Role Selection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar for Dashboard Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="p-6">
+            <div class="flex items-center mb-8">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+                    <i class="fas fa-code"></i>
+                </div>
+                <span class="ml-2 text-xl font-bold">CodewiseHub</span>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center p-3 bg-gray-100 rounded-lg">
+                    <div id="sidebarUserAvatar" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="ml-3">
+                        <div id="sidebarUserName" class="font-semibold">User</div>
+                        <div id="sidebarUserRole" class="text-sm text-gray-600">Role</div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav id="sidebarNav" class="space-y-2">
+                <!-- Navigation items will be populated based on role -->
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="gradient-bg py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                        Explore. Learn. Code.
+                        <span class="block text-yellow-300">Together!</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+                        Dive into fun, interactive coding adventures designed for young minds. 
+                        Build amazing projects, learn with AI, and become a coding hero!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="showSignUp()" class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition bounce-animation">
+                            <i class="fas fa-rocket mr-2"></i>Start Learning Now
+                        </button>
+                        <button onclick="scrollToSection('features')" class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                            <i class="fas fa-play mr-2"></i>Explore Features
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Age Selection Section -->
+        <section id="ageSelection" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Learning Path!</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Select your age group to discover learning paths designed just for you
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- Little Coders -->
+                    <div class="age-selector kid-gradient p-8 rounded-2xl shadow-lg text-center" onclick="selectAgeGroup('kids')">
+                        <div class="text-6xl mb-4">🧩</div>
+                        <h3 class="text-2xl font-bold text-purple-800 mb-4">Little Coders</h3>
+                        <p class="text-purple-700 mb-4">Ages 6-11</p>
+                        <div class="text-sm text-purple-600 mb-6">
+                            <i class="fas fa-puzzle-piece mr-2"></i>Visual Block Programming<br>
+                            <i class="fas fa-robot mr-2"></i>Robot Adventures<br>
+                            <i class="fas fa-palette mr-2"></i>Creative Projects
+                        </div>
+                        <button class="bg-purple-500 text-white px-6 py-3 rounded-full font-bold hover:bg-purple-600 transition">
+                            Start My Journey! 🌟
+                        </button>
+                    </div>
+
+                    <!-- Teen Developers -->
+                    <div class="age-selector teen-gradient p-8 rounded-2xl shadow-lg text-center" onclick="selectAgeGroup('teens')">
+                        <div class="text-6xl mb-4">💻</div>
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4">Teen Developers</h3>
+                        <p class="text-blue-700 mb-4">Ages 12-18</p>
+                        <div class="text-sm text-blue-600 mb-6">
+                            <i class="fas fa-code mr-2"></i>Real Programming<br>
+                            <i class="fas fa-project-diagram mr-2"></i>Advanced Projects<br>
+                            <i class="fas fa-trophy mr-2"></i>Career Prep
+                        </div>
+                        <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-600 transition">
+                            Level Up! 🚀
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Dashboard -->
+        <section id="studentDashboard" class="py-16 bg-gray-100 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Your Learning Dashboard</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Welcome back! Continue your coding journey.</p>
+                </div>
+
+                <!-- Little Coders Dashboard -->
+                <div id="littleCodersDashboard" class="hidden">
+                    <div class="dashboard-grid">
+                        <!-- Visual Programming Course -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-puzzle-piece text-purple-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Visual Block Programming</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Learn programming with colorful blocks! No typing required.</p>
+                            <div class="mb-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Progress: 65%</p>
+                            </div>
+                            <button onclick="openCodingLab()" class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                                Continue Learning
+                            </button>
+                        </div>
+
+                        <!-- Enhanced Robotics Playground -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-robot text-pink-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Enhanced Robotics Playground</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Control virtual robots and solve exciting puzzles!</p>
+                            <div class="mb-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-pink-500 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Progress: 45%</p>
+                            </div>
+                            <button onclick="openRoboticsPlayground()" class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition">
+                                Play with Robots
+                            </button>
+                        </div>
+
+                        <!-- Creative Coding -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-palette text-green-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Creative Art Coding</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Create beautiful digital art using code!</p>
+                            <div class="mb-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Progress: 30%</p>
+                            </div>
+                            <button class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                                Create Art
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teen Developers Dashboard -->
+                <div id="teenDevelopersDashboard" class="hidden">
+                    <div class="dashboard-grid">
+                        <!-- Monaco Code Editor -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-code text-blue-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Monaco Code Editor</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Professional coding environment with syntax highlighting.</p>
+                            <div class="mb-4">
+                                <select id="languageSelect" class="w-full px-3 py-2 border rounded-lg mb-2">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                </select>
+                            </div>
+                            <div id="monacoEditor" class="monaco-container mb-4"></div>
+                            <div class="flex gap-2">
+                                <button onclick="runCode()" class="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">
+                                    <i class="fas fa-play mr-2"></i>Run
+                                </button>
+                                <button onclick="saveCode()" class="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                                    <i class="fas fa-save mr-2"></i>Save
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Code Output -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <h4 class="text-lg font-bold mb-4">Output</h4>
+                            <div id="codeOutput" class="bg-gray-100 p-4 rounded-lg h-64 overflow-auto">
+                                <p class="text-gray-500">Your code output will appear here...</p>
+                            </div>
+                            <button onclick="clearOutput()" class="w-full mt-4 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition">
+                                Clear Output
+                            </button>
+                        </div>
+
+                        <!-- Web Development -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-globe text-orange-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Web Development</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Build responsive websites with HTML, CSS, and JavaScript.</p>
+                            <div class="mb-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Progress: 75%</p>
+                            </div>
+                            <button class="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition">
+                                Continue Course
+                            </button>
+                        </div>
+
+                        <!-- Python Programming -->
+                        <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="text-center mb-4">
+                                <i class="fab fa-python text-green-500 text-4xl mb-2"></i>
+                                <h4 class="text-lg font-bold">Python Programming</h4>
+                            </div>
+                            <p class="text-gray-600 mb-4">Master Python for data science and automation.</p>
+                            <div class="mb-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Progress: 50%</p>
+                            </div>
+                            <button class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                                Learn Python
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Robotics Playground Section -->
+        <section id="roboticsPlayground" class="py-16 bg-white hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Enhanced Robotics Playground</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Program multiple types of robots with enhanced features and solve challenging puzzles!
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                    <!-- Enhanced Robot Programming -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Enhanced Robot Programming</h3>
+                        
+                        <!-- Robot Type Selection -->
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Select Robot Type:</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="enhanced-robot-btn" onclick="selectRobot('ground')">
+                                    <i class="fas fa-robot"></i>Ground Robot
+                                </button>
+                                <button class="enhanced-robot-btn" onclick="selectRobot('drone')">
+                                    <i class="fas fa-helicopter"></i>Drone
+                                </button>
+                                <button class="enhanced-robot-btn" onclick="selectRobot('arm')">
+                                    <i class="fas fa-hand-paper"></i>Robotic Arm
+                                </button>
+                                <button class="enhanced-robot-btn" onclick="selectRobot('pet')">
+                                    <i class="fas fa-dog"></i>Pet Robot
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Robot Controls -->
+                        <div class="enhanced-robot-controls">
+                            <button class="enhanced-robot-btn" onclick="robotCommand('forward')">
+                                <i class="fas fa-arrow-up"></i>Forward
+                            </button>
+                            <button class="enhanced-robot-btn" onclick="robotCommand('backward')">
+                                <i class="fas fa-arrow-down"></i>Backward
+                            </button>
+                            <button class="enhanced-robot-btn" onclick="robotCommand('left')">
+                                <i class="fas fa-arrow-left"></i>Left
+                            </button>
+                            <button class="enhanced-robot-btn" onclick="robotCommand('right')">
+                                <i class="fas fa-arrow-right"></i>Right
+                            </button>
+                            <button class="enhanced-robot-btn" onclick="robotCommand('dance')">
+                                <i class="fas fa-music"></i>Dance
+                            </button>
+                            <button class="enhanced-robot-btn" onclick="robotCommand('reset')">
+                                <i class="fas fa-redo"></i>Reset
+                            </button>
+                        </div>
+                        
+                        <div class="flex gap-4 mt-4">
+                            <button onclick="runRobotProgram()" class="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                                <i class="fas fa-play mr-2"></i>Run Program
+                            </button>
+                            <button onclick="recordProgram()" class="flex-1 bg-purple-500 text-white py-2 rounded hover:bg-purple-600 transition">
+                                <i class="fas fa-video mr-2"></i>Record
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Robot Simulator -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Enhanced Robot Simulator</h3>
+                        
+                        <!-- Environment Selection -->
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Environment:</h4>
+                            <div class="flex gap-2">
+                                <button class="enhanced-robot-btn flex-1" onclick="setEnvironment('maze')">
+                                    <i class="fas fa-th"></i>Maze
+                                </button>
+                                <button class="enhanced-robot-btn flex-1" onclick="setEnvironment('obstacles')">
+                                    <i class="fas fa-cubes"></i>Obstacles
+                                </button>
+                                <button class="enhanced-robot-btn flex-1" onclick="setEnvironment('treasure')">
+                                    <i class="fas fa-gem"></i>Treasure Hunt
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="enhancedRobotSimulator" class="robot-maze h-64 mb-4">
+                            <div id="enhancedRobotAvatar" class="robot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <!-- Dynamic obstacles and treasures will be added here -->
+                        </div>
+                        
+                        <!-- Robot Status -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-3 rounded">
+                                <h5 class="font-semibold text-sm mb-1">Battery</h5>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="batteryLevel" class="bg-green-500 h-2 rounded-full transition-all" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <h5 class="font-semibold text-sm mb-1">Score</h5>
+                                <div id="robotScore" class="text-lg font-bold text-blue-600">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Robot Challenges -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Enhanced Robot Challenges</h3>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="challenge-card text-center">
+                            <i class="fas fa-route text-blue-500 text-4xl mb-4"></i>
+                            <h4 class="text-lg font-bold mb-2">Advanced Maze</h4>
+                            <p class="text-gray-600 mb-4">Navigate through complex multi-level mazes with moving obstacles!</p>
+                            <button onclick="loadEnhancedChallenge('advanced-maze')" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                                Start Challenge
+                            </button>
+                        </div>
+                        
+                        <div class="challenge-card text-center">
+                            <i class="fas fa-gem text-purple-500 text-4xl mb-4"></i>
+                            <h4 class="text-lg font-bold mb-2">Treasure Hunt</h4>
+                            <p class="text-gray-600 mb-4">Collect treasures while avoiding traps and competing robots!</p>
+                            <button onclick="loadEnhancedChallenge('treasure-hunt')" class="w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-600 transition">
+                                Start Challenge
+                            </button>
+                        </div>
+                        
+                        <div class="challenge-card text-center">
+                            <i class="fas fa-flag-checkered text-green-500 text-4xl mb-4"></i>
+                            <h4 class="text-lg font-bold mb-2">Robot Race</h4>
+                            <p class="text-gray-600 mb-4">Race against time and other robots to reach the finish line!</p>
+                            <button onclick="loadEnhancedChallenge('robot-race')" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">
+                                Start Challenge
+                            </button>
+                        </div>
+                        
+                        <div class="challenge-card text-center">
+                            <i class="fas fa-puzzle-piece text-orange-500 text-4xl mb-4"></i>
+                            <h4 class="text-lg font-bold mb-2">Logic Puzzles</h4>
+                            <p class="text-gray-600 mb-4">Solve complex logic puzzles using programming principles!</p>
+                            <button onclick="loadEnhancedChallenge('logic-puzzles')" class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition">
+                                Start Challenge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Teacher Dashboard -->
+        <section id="teacherDashboard" class="py-16 bg-gray-100 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Teacher Dashboard</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Manage your students and create engaging content</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- AI Content Generator -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-robot text-blue-500 mr-2"></i>AI Content Generator
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                                <select id="contentType" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <option value="lesson">Lesson Plan</option>
+                                    <option value="quiz">Quiz Questions</option>
+                                    <option value="project">Project Ideas</option>
+                                    <option value="exercise">Practice Exercises</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+                                <input type="text" id="contentTopic" placeholder="e.g., Python loops, HTML basics" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Age Group</label>
+                                <select id="contentAgeGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <option value="kids">Little Coders (6-11)</option>
+                                    <option value="teens">Teen Developers (12-18)</option>
+                                </select>
+                            </div>
+                            
+                            <button onclick="generateContent()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                                <i class="fas fa-magic mr-2"></i>Generate Content
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Student Progress Monitor -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-chart-line text-green-500 mr-2"></i>Student Progress
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="studentProgressChart" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Course Management -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-book text-purple-500 mr-2"></i>Course Management
+                        </h3>
+                        <div class="space-y-4">
+                            <button onclick="createCourse()" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition">
+                                <i class="fas fa-plus mr-2"></i>Create New Course
+                            </button>
+                            
+                            <div id="courseList" class="space-y-2">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <span class="font-medium">Visual Programming Basics</span>
+                                    <button class="text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <span class="font-medium">Robot Adventures</span>
+                                    <button class="text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Class Overview -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-users text-orange-500 mr-2"></i>Class Overview
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span>Total Students</span>
+                                <span class="font-bold text-blue-500">24</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Active This Week</span>
+                                <span class="font-bold text-green-500">18</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Average Progress</span>
+                                <span class="font-bold text-purple-500">67%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parent Dashboard -->
+        <section id="parentDashboard" class="py-16 bg-gray-100 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Parent Dashboard</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Monitor your child's learning progress and achievements</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Child Progress Overview -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-child text-pink-500 mr-2"></i>Child Progress
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="childProgressChart" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Time -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-clock text-blue-500 mr-2"></i>Learning Time
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="learningTimeChart" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activities -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-history text-green-500 mr-2"></i>Recent Activities
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <i class="fas fa-puzzle-piece text-purple-500 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">Completed Block Programming Lesson 3</p>
+                                    <p class="text-sm text-gray-500">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <i class="fas fa-robot text-pink-500 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">Solved Robot Maze Challenge</p>
+                                    <p class="text-sm text-gray-500">Yesterday</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-gray-50 rounded">
+                                <i class="fas fa-star text-yellow-500 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">Earned "Problem Solver" Badge</p>
+                                    <p class="text-sm text-gray-500">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Achievements -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-trophy text-yellow-500 mr-2"></i>Achievements
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">First Steps</p>
+                                    <p class="text-sm text-gray-500">Completed first lesson</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-puzzle-piece"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Block Master</p>
+                                    <p class="text-sm text-gray-500">Completed 10 block programs</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Robot Commander</p>
+                                    <p class="text-sm text-gray-500">Solved 5 robot challenges</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose CodewiseHub?</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Comprehensive learning platform with age-appropriate content and advanced features
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="text-4xl text-blue-500 mb-4">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Interactive Coding</h3>
+                        <p class="text-gray-600">Visual blocks for beginners, Monaco editor for advanced learners</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl text-green-500 mb-4">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Enhanced Robotics</h3>
+                        <p class="text-gray-600">Control multiple robot types with advanced programming challenges</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl text-purple-500 mb-4">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">AI Learning Assistant</h3>
+                        <p class="text-gray-600">Personalized help and AI-powered content generation</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl text-orange-500 mb-4">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Progress Tracking</h3>
+                        <p class="text-gray-600">Monitor learning progress and achievements in real-time</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl text-red-500 mb-4">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Multi-Role Support</h3>
+                        <p class="text-gray-600">Students, teachers, and parents all in one platform</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl text-indigo-500 mb-4">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Age-Appropriate Learning</h3>
+                        <p class="text-gray-600">Tailored content for different age groups and skill levels</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-16 bg-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Plan</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Flexible pricing options for students, teachers, and parents
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Basic Plan -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                        <h3 class="text-2xl font-bold mb-4">Basic</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">Free</div>
+                        <ul class="text-left space-y-2 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>3 Basic Courses</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Visual Block Editor</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Basic Progress Tracking</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Community Support</li>
+                        </ul>
+                        <button onclick="selectPlan('basic')" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition">
+                            Get Started
+                        </button>
+                    </div>
+
+                    <!-- Premium Plan -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 text-center border-2 border-blue-500 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm">
+                            Most Popular
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Premium</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$29<span class="text-lg">/month</span></div>
+                        <ul class="text-left space-y-2 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>All Courses</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Monaco Code Editor</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Enhanced Robotics</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>AI Assistant</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Priority Support</li>
+                        </ul>
+                        <button onclick="selectPlan('premium')" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition">
+                            Choose Premium
+                        </button>
+                    </div>
+
+                    <!-- Pro Plan -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                        <h3 class="text-2xl font-bold mb-4">Pro</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$49<span class="text-lg">/month</span></div>
+                        <ul class="text-left space-y-2 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Everything in Premium</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Teacher Dashboard</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Parent Monitoring</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Custom Content</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>1-on-1 Support</li>
+                        </ul>
+                        <button onclick="selectPlan('pro')" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition">
+                            Choose Pro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">About CodewiseHub</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Empowering the next generation of programmers with age-appropriate, engaging, and effective coding education
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-6">Our Mission</h3>
+                        <p class="text-gray-600 mb-6">
+                            At CodewiseHub, we believe that coding is a fundamental skill for the future. Our mission is to make programming education accessible, enjoyable, and effective for learners of all ages.
+                        </p>
+                        <p class="text-gray-600 mb-6">
+                            We provide age-appropriate learning paths, from visual block programming for young children to professional development environments for teenagers, ensuring that every learner can progress at their own pace.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Interactive Learning</div>
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">AI-Powered</div>
+                            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Multi-Role Support</div>
+                            <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">Progress Tracking</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
+                        <h4 class="text-xl font-bold mb-4">Key Statistics</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span>Students Worldwide</span>
+                                <span class="font-bold">50,000+</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Interactive Lessons</span>
+                                <span class="font-bold">1,000+</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Programming Languages</span>
+                                <span class="font-bold">12+</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Success Rate</span>
+                                <span class="font-bold">95%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <span class="ml-2 text-xl font-bold">CodewiseHub</span>
+                        </div>
+                        <p class="text-gray-400 mb-4">
+                            Empowering young minds with comprehensive coding education tailored to their age and skill level.
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Courses</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white transition">Little Coders (Ages 6-11)</a></li>
+                            <li><a href="#" class="hover:text-white transition">Teen Developers (Ages 12-18)</a></li>
+                            <li><a href="#" class="hover:text-white transition">Visual Programming</a></li>
+                            <li><a href="#" class="hover:text-white transition">Enhanced Robotics</a></li>
+                            <li><a href="#" class="hover:text-white transition">Web Development</a></li>
+                            <li><a href="#" class="hover:text-white transition">Python Programming</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Features</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white transition">Interactive Coding Lab</a></li>
+                            <li><a href="#" class="hover:text-white transition">Monaco Code Editor</a></li>
+                            <li><a href="#" class="hover:text-white transition">Robotics Playground</a></li>
+                            <li><a href="#" class="hover:text-white transition">AI Learning Assistant</a></li>
+                            <li><a href="#" class="hover:text-white transition">Progress Tracking</a></li>
+                            <li><a href="#" class="hover:text-white transition">Multi-Role Dashboards</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Support</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white transition">Help Center</a></li>
+                            <li><a href="#" class="hover:text-white transition">Documentation</a></li>
+                            <li><a href="#" class="hover:text-white transition">Community Forum</a></li>
+                            <li><a href="#" class="hover:text-white transition">Contact Support</a></li>
+                            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                            <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2024 CodewiseHub. All rights reserved. Empowering the next generation of coders.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "demo-key-for-codewise-hub",
+            authDomain: "codewise-hub.firebaseapp.com",
+            projectId: "codewise-hub",
+            storageBucket: "codewise-hub.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "demo-app-id"
+        };
+
+        // Global variables
+        let currentUser = null;
+        let currentRole = null;
+        let selectedAgeGroup = null;
+        let monacoEditor = null;
+        let robotPosition = { x: 50, y: 50 };
+        let robotDirection = 0;
+        let robotBattery = 100;
+        let robotScore = 0;
+        let currentEnvironment = 'maze';
+        let currentRobotType = 'ground';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            initializeCharts();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Monaco Editor language change
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.addEventListener('change', updateMonacoLanguage);
+            }
+        }
+
+        // Authentication Functions
+        function showSignIn() {
+            document.getElementById('authModal').classList.add('active');
+            showRoleSelection();
+        }
+
+        function showSignUp() {
+            document.getElementById('authModal').classList.add('active');
+            showRoleSelection();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+            showRoleSelection();
+        }
+
+        function showRoleSelection() {
+            document.getElementById('roleSelection').classList.remove('hidden');
+            document.getElementById('signInForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.add('hidden');
+        }
+
+        function selectRole(role) {
+            currentRole = role;
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('signInForm').classList.remove('hidden');
+            
+            // Show/hide student-specific fields
+            const studentFields = document.getElementById('studentFields');
+            if (role === 'student') {
+                studentFields.classList.remove('hidden');
+            } else {
+                studentFields.classList.add('hidden');
+            }
+        }
+
+        function switchToSignUp() {
+            document.getElementById('signInForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('hidden');
+        }
+
+        function switchToSignIn() {
+            document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('signInForm').classList.remove('hidden');
+        }
+
+        function signInAnonymously() {
+            // Simulate anonymous sign in
+            currentUser = {
+                uid: 'demo-user-' + Date.now(),
+                email: 'demo@codewise.com',
+                displayName: currentRole.charAt(0).toUpperCase() + currentRole.slice(1) + ' User'
+            };
+            
+            if (currentRole === 'student') {
+                selectedAgeGroup = document.getElementById('ageGroup').value;
+            }
+            
+            closeAuthModal();
+            showMainApplication();
+        }
+
+        function signOut() {
+            currentUser = null;
+            currentRole = null;
+            selectedAgeGroup = null;
+            
+            // Reset UI
+            document.getElementById('authButtons').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            hideAllDashboards();
+            closeSidebar();
+            
+            // Scroll to home
+            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Main Application Functions
+        function showMainApplication() {
+            // Update user info
+            document.getElementById('userName').textContent = currentUser.displayName;
+            document.getElementById('userRole').textContent = currentRole.charAt(0).toUpperCase() + currentRole.slice(1);
+            document.getElementById('sidebarUserName').textContent = currentUser.displayName;
+            document.getElementById('sidebarUserRole').textContent = currentRole.charAt(0).toUpperCase() + currentRole.slice(1);
+            
+            // Show user info, hide auth buttons
+            document.getElementById('authButtons').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            
+            // Setup sidebar navigation based on role
+            setupSidebarNavigation();
+            
+            // Show appropriate dashboard
+            showDashboard();
+            
+            // Initialize Monaco Editor for teen developers
+            if (currentRole === 'student' && selectedAgeGroup === 'teens') {
+                setTimeout(initializeMonacoEditor, 100);
+            }
+        }
+
+        function setupSidebarNavigation() {
+            const nav = document.getElementById('sidebarNav');
+            let navItems = [];
+            
+            if (currentRole === 'student') {
+                navItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
+                    { id: 'coding-lab', label: 'Coding Lab', icon: 'fas fa-code' },
+                    { id: 'robotics', label: 'Robotics', icon: 'fas fa-robot' },
+                    { id: 'progress', label: 'Progress', icon: 'fas fa-chart-line' }
+                ];
+            } else if (currentRole === 'teacher') {
+                navItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
+                    { id: 'content-generator', label: 'AI Content', icon: 'fas fa-magic' },
+                    { id: 'student-progress', label: 'Student Progress', icon: 'fas fa-users' },
+                    { id: 'course-management', label: 'Courses', icon: 'fas fa-book' }
+                ];
+            } else if (currentRole === 'parent') {
+                navItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
+                    { id: 'child-progress', label: 'Child Progress', icon: 'fas fa-child' },
+                    { id: 'activities', label: 'Activities', icon: 'fas fa-history' },
+                    { id: 'reports', label: 'Reports', icon: 'fas fa-file-alt' }
+                ];
+            }
+            
+            nav.innerHTML = navItems.map(item => `
+                <button onclick="navigateTo('${item.id}')" class="w-full text-left p-3 rounded-lg hover:bg-gray-100 transition flex items-center">
+                    <i class="${item.icon} mr-3"></i>${item.label}
+                </button>
+            `).join('');
+        }
+
+        function navigateTo(page) {
+            hideAllDashboards();
+            
+            if (page === 'dashboard') {
+                showDashboard();
+            } else if (page === 'coding-lab') {
+                openCodingLab();
+            } else if (page === 'robotics') {
+                openRoboticsPlayground();
+            }
+            
+            closeSidebar();
+        }
+
+        function showDashboard() {
+            hideAllDashboards();
+            
+            if (currentRole === 'student') {
+                document.getElementById('studentDashboard').classList.remove('hidden');
+                if (selectedAgeGroup === 'kids') {
+                    document.getElementById('littleCodersDashboard').classList.remove('hidden');
+                } else {
+                    document.getElementById('teenDevelopersDashboard').classList.remove('hidden');
+                }
+            } else if (currentRole === 'teacher') {
+                document.getElementById('teacherDashboard').classList.remove('hidden');
+                initializeTeacherCharts();
+            } else if (currentRole === 'parent') {
+                document.getElementById('parentDashboard').classList.remove('hidden');
+                initializeParentCharts();
+            }
+        }
+
+        function hideAllDashboards() {
+            const dashboards = [
+                'studentDashboard', 'teacherDashboard', 'parentDashboard',
+                'roboticsPlayground', 'littleCodersDashboard', 'teenDevelopersDashboard'
+            ];
+            
+            dashboards.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.classList.add('hidden');
+            });
+        }
+
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('open');
+            mainContent.classList.toggle('sidebar-open');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.remove('open');
+            mainContent.classList.remove('sidebar-open');
+        }
+
+        // Age Group Selection
+        function selectAgeGroup(ageGroup) {
+            selectedAgeGroup = ageGroup;
+            showSignUp();
+        }
+
+        // Monaco Editor Functions
+        function initializeMonacoEditor() {
+            if (typeof monaco === 'undefined') {
+                require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+                require(['vs/editor/editor.main'], function () {
+                    createMonacoEditor();
+                });
+            } else {
+                createMonacoEditor();
+            }
+        }
+
+        function createMonacoEditor() {
+            const editorElement = document.getElementById('monacoEditor');
+            if (editorElement && !monacoEditor) {
+                monacoEditor = monaco.editor.create(editorElement, {
+                    value: '// Welcome to CodewiseHub!\n// Start coding here...\n\nconsole.log("Hello, World!");',
+                    language: 'javascript',
+                    theme: 'vs-light',
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    wordWrap: 'on',
+                    automaticLayout: true
+                });
+            }
+        }
+
+        function updateMonacoLanguage() {
+            if (!monacoEditor) return;
+            
+            const language = document.getElementById('languageSelect').value;
+            monaco.editor.setModelLanguage(monacoEditor.getModel(), language);
+            
+            const starterCode = {
+                'javascript': '// JavaScript Code\nconsole.log("Hello, JavaScript!");',
+                'python': '# Python Code\nprint("Hello, Python!")',
+                'html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>My Page</title>\n</head>\n<body>\n    <h1>Hello, HTML!</h1>\n</body>\n</html>',
+                'css': '/* CSS Code */\nbody {\n    font-family: Arial, sans-serif;\n    color: #333;\n}'
+            };
+            
+            monacoEditor.setValue(starterCode[language] || '');
+        }
+
+        function runCode() {
+            if (!monacoEditor) return;
+            
+            const code = monacoEditor.getValue();
+            const language = document.getElementById('languageSelect').value;
+            const output = document.getElementById('codeOutput');
+            
+            try {
+                if (language === 'javascript') {
+                    const originalConsoleLog = console.log;
+                    let outputText = '';
+                    
+                    console.log = function(...args) {
+                        outputText += args.join(' ') + '\n';
+                    };
+                    
+                    eval(code);
+                    console.log = originalConsoleLog;
+                    
+                    output.innerHTML = `<pre class="text-green-600">${outputText || 'Code executed successfully!'}</pre>`;
+                } else if (language === 'html') {
+                    output.innerHTML = `<iframe srcdoc="${code.replace(/"/g, '&quot;')}" style="width:100%;height:300px;border:1px solid #ccc;"></iframe>`;
+                } else {
+                    output.innerHTML = `<pre class="text-blue-600">${code}</pre><p class="text-green-600 mt-2">✓ Code saved successfully!</p>`;
+                }
+            } catch (error) {
+                output.innerHTML = `<pre class="text-red-500">Error: ${error.message}</pre>`;
+            }
+        }
+
+        function saveCode() {
+            if (monacoEditor) {
+                const code = monacoEditor.getValue();
+                localStorage.setItem('codewise-code', code);
+                showNotification('Code saved successfully!', 'success');
+            }
+        }
+
+        function clearOutput() {
+            const output = document.getElementById('codeOutput');
+            output.innerHTML = '<p class="text-gray-500">Your code output will appear here...</p>';
+        }
+
+        // Robotics Functions
+        function openRoboticsPlayground() {
+            hideAllDashboards();
+            document.getElementById('roboticsPlayground').classList.remove('hidden');
+            resetRobot();
+        }
+
+        function selectRobot(type) {
+            currentRobotType = type;
+            const robotAvatar = document.getElementById('enhancedRobotAvatar');
+            
+            const robotIcons = {
+                'ground': 'fas fa-robot',
+                'drone': 'fas fa-helicopter',
+                'arm': 'fas fa-hand-paper',
+                'pet': 'fas fa-dog'
+            };
+            
+            robotAvatar.innerHTML = `<i class="${robotIcons[type]}"></i>`;
+            showNotification(`Selected ${type} robot!`, 'info');
+        }
+
+        function setEnvironment(env) {
+            currentEnvironment = env;
+            const simulator = document.getElementById('enhancedRobotSimulator');
+            
+            // Clear existing obstacles and treasures
+            simulator.querySelectorAll('.obstacle, .treasure').forEach(el => el.remove());
+            
+            if (env === 'obstacles') {
+                // Add obstacles
+                for (let i = 0; i < 5; i++) {
+                    const obstacle = document.createElement('div');
+                    obstacle.className = 'obstacle';
+                    obstacle.style.left = Math.random() * 80 + 10 + '%';
+                    obstacle.style.top = Math.random() * 80 + 10 + '%';
+                    obstacle.style.width = '30px';
+                    obstacle.style.height = '30px';
+                    simulator.appendChild(obstacle);
+                }
+            } else if (env === 'treasure') {
+                // Add treasures
+                for (let i = 0; i < 3; i++) {
+                    const treasure = document.createElement('div');
+                    treasure.className = 'treasure';
+                    treasure.innerHTML = '<i class="fas fa-gem"></i>';
+                    treasure.style.left = Math.random() * 80 + 10 + '%';
+                    treasure.style.top = Math.random() * 80 + 10 + '%';
+                    simulator.appendChild(treasure);
+                }
+            }
+            
+            showNotification(`Environment set to ${env}!`, 'info');
+        }
+
+        function robotCommand(command) {
+            const robotAvatar = document.getElementById('enhancedRobotAvatar');
+            const batteryEl = document.getElementById('batteryLevel');
+            const scoreEl = document.getElementById('robotScore');
+            
+            switch(command) {
+                case 'forward':
+                    robotPosition.y = Math.max(robotPosition.y - 8, 5);
+                    robotBattery = Math.max(robotBattery - 2, 0);
+                    break;
+                case 'backward':
+                    robotPosition.y = Math.min(robotPosition.y + 8, 95);
+                    robotBattery = Math.max(robotBattery - 2, 0);
+                    break;
+                case 'left':
+                    robotPosition.x = Math.max(robotPosition.x - 8, 5);
+                    robotBattery = Math.max(robotBattery - 2, 0);
+                    break;
+                case 'right':
+                    robotPosition.x = Math.min(robotPosition.x + 8, 95);
+                    robotBattery = Math.max(robotBattery - 2, 0);
+                    break;
+                case 'dance':
+                    robotAvatar.style.transform = 'translate(-50%, -50%) rotate(360deg) scale(1.2)';
+                    setTimeout(() => {
+                        robotAvatar.style.transform = 'translate(-50%, -50%)';
+                    }, 1000);
+                    robotBattery = Math.max(robotBattery - 5, 0);
+                    robotScore += 10;
+                    break;
+                case 'reset':
+                    robotPosition = { x: 50, y: 50 };
+                    robotBattery = 100;
+                    robotScore = 0;
+                    break;
+            }
+            
+            // Update robot position
+            robotAvatar.style.left = robotPosition.x + '%';
+            robotAvatar.style.top = robotPosition.y + '%';
+            
+            // Update battery and score
+            batteryEl.style.width = robotBattery + '%';
+            scoreEl.textContent = robotScore;
+            
+            // Check for treasure collection
+            checkTreasureCollection();
+        }
+
+        function checkTreasureCollection() {
+            const treasures = document.querySelectorAll('.treasure');
+            treasures.forEach(treasure => {
+                const treasureRect = treasure.getBoundingClientRect();
+                const robotRect = document.getElementById('enhancedRobotAvatar').getBoundingClientRect();
+                
+                if (Math.abs(treasureRect.left - robotRect.left) < 30 && 
+                    Math.abs(treasureRect.top - robotRect.top) < 30) {
+                    treasure.remove();
+                    robotScore += 50;
+                    document.getElementById('robotScore').textContent = robotScore;
+                    showNotification('Treasure collected! +50 points', 'success');
+                }
+            });
+        }
+
+        function runRobotProgram() {
+            showNotification('Robot program started!', 'info');
+            // Simulate a program run
+            setTimeout(() => {
+                robotCommand('forward');
+                setTimeout(() => {
+                    robotCommand('right');
+                    setTimeout(() => {
+                        robotCommand('dance');
+                        showNotification('Robot program completed!', 'success');
+                    }, 500);
+                }, 500);
+            }, 500);
+        }
+
+        function recordProgram() {
+            showNotification('Recording robot program...', 'info');
+            // Simulate recording
+            setTimeout(() => {
+                showNotification('Program recorded successfully!', 'success');
+            }, 2000);
+        }
+
+        function resetRobot() {
+            robotPosition = { x: 50, y: 50 };
+            robotBattery = 100;
+            robotScore = 0;
+            robotDirection = 0;
+            
+            const robotAvatar = document.getElementById('enhancedRobotAvatar');
+            if (robotAvatar) {
+                robotAvatar.style.left = '50%';
+                robotAvatar.style.top = '50%';
+                robotAvatar.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            const batteryEl = document.getElementById('batteryLevel');
+            const scoreEl = document.getElementById('robotScore');
+            if (batteryEl) batteryEl.style.width = '100%';
+            if (scoreEl) scoreEl.textContent = '0';
+        }
+
+        function loadEnhancedChallenge(challengeType) {
+            showNotification(`Loading ${challengeType} challenge...`, 'info');
+            resetRobot();
+            
+            setTimeout(() => {
+                setEnvironment(challengeType.includes('maze') ? 'maze' : 
+                              challengeType.includes('treasure') ? 'treasure' : 'obstacles');
+                showNotification(`${challengeType} challenge loaded!`, 'success');
+            }, 1000);
+        }
+
+        // Chart Functions
+        function initializeCharts() {
+            // These will be called when dashboards are shown
+        }
+
+        function initializeTeacherCharts() {
+            const ctx = document.getElementById('studentProgressChart');
+            if (ctx && !ctx.chart) {
+                ctx.chart = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Web Dev', 'Python', 'Robotics', 'AI/ML', 'Game Dev'],
+                        datasets: [{
+                            label: 'Student Progress %',
+                            data: [78, 65, 45, 32, 58],
+                            backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, max: 100 } }
+                    }
+                });
+            }
+        }
+
+        function initializeParentCharts() {
+            // Child Progress Chart
+            const childCtx = document.getElementById('childProgressChart');
+            if (childCtx && !childCtx.chart) {
+                childCtx.chart = new Chart(childCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Progress',
+                            data: [20, 45, 60, 80],
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, max: 100 } }
+                    }
+                });
+            }
+            
+            // Learning Time Chart
+            const timeCtx = document.getElementById('learningTimeChart');
+            if (timeCtx && !timeCtx.chart) {
+                timeCtx.chart = new Chart(timeCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Visual Programming', 'Robotics', 'Creative Coding'],
+                        datasets: [{
+                            data: [45, 30, 25],
+                            backgroundColor: ['#8B5CF6', '#EC4899', '#10B981']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 transition-transform transform translate-x-full`;
+            
+            switch(type) {
+                case 'success':
+                    notification.classList.add('bg-green-500');
+                    break;
+                case 'error':
+                    notification.classList.add('bg-red-500');
+                    break;
+                case 'info':
+                default:
+                    notification.classList.add('bg-blue-500');
+                    break;
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function openCodingLab() {
+            if (currentRole === 'student' && selectedAgeGroup === 'teens') {
+                showDashboard(); // This will show the Monaco editor
+            } else {
+                showNotification('Coding lab available for signed-in students', 'info');
+            }
+        }
+
+        function generateContent() {
+            const contentType = document.getElementById('contentType').value;
+            const topic = document.getElementById('contentTopic').value;
+            const ageGroup = document.getElementById('contentAgeGroup').value;
+            
+            if (!topic.trim()) {
+                showNotification('Please enter a topic', 'error');
+                return;
+            }
+            
+            showNotification(`Generating ${contentType} for ${topic}...`, 'info');
+            
+            setTimeout(() => {
+                showNotification(`${contentType} generated successfully!`, 'success');
+            }, 2000);
+        }
+
+        function createCourse() {
+            showNotification('Opening course creator...', 'info');
+        }
+
+        function selectPlan(plan) {
+            showNotification(`Selected ${plan} plan! Redirecting to payment...`, 'info');
+        }
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpGqgnp1UTDCM2IAJzqO26B6byPsAEk5WSpfhhRw4Lkt55PFewKNoU3hShcCJ35Qyo1QJzMBLniaHP6YnSOJAHdUjKQOaPfzi7XXlJNsHLhPkT5mtpLBUX%2BZM1yExix8fIMGF8OZ4WLGGZFx9HeU8Fg2YyVXv59yFJ5nrS7d0wK1EbhapLgYF68E8LeSmuKYBI5jVS1aD2hO6nzQyAqpWQ43yOpyQKnEw4bh9GEvPG5KmTlF47ngqNJR%2BjB7b0hvd3GHCd5QFSyl5wBdjjC2cdzfkdny2Z6hs1fMCAHAwhhYWoMsCQqXHB44hgTBYZ4NS7g7vxE4QkcQvW8L2cklC%2B7JubnIH2%2FykrSAvO%2BN1Cgxhxun5ninnhoQkXYucfmptnLbbSu8mwx%2BGx2%2FpoKRsRNG%2FB166Z2CYL%2Fw%2FBmjZvEG4Nd%2BOJ6rVn%2F9HVrSl7FSjI2MQOJ96EmNm%2BanRwbqAUTyWoZQAp0tg%2F6%2FpjwOwnyaeMrDlzMZih%2B7xgEtC6AUFcjQkmmpZTs3GToUCx634R8%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpGqgnp1UTDCM2IAJzqO26B6byPsAEk5WSpfhhRw4Lkt55PFewKNoU3hShcCJ35Qyo1QJzMBLniaHP6YnSOJAHdUjKQOaPfzi7XXlJNsHLhPkT5mtpLBUX+ZM1yExix8fIMGF8OZ4WLGGZFx9HeU8Fg2YyVXv59yFJ5nrS7d0wK1EbhapLgYF68E8LeSmuKYBI5jVS1aD2hO6nzQyAqpWQ43yOpyQKnEw4bh9GEvPG5KmTlF47ngqNJR+jB7b0hvd3GHCd5QFSyl5wBdjjC2cdzfkdny2Z6hs1fMCAHAwhhYWoMsCQqXHB44hgTBYZ4NS7g7vxE4QkcQvW8L2cklC+7JubnIH2/ykrSAvO+N1Cgxhxun5ninnhoQkXYucfmptnLbbSu8mwx+Gx2/poKRsRNG/B166Z2CYL/w/BmjZvEG4Nd+OJ6rVn/9HVrSl7FSjI2MQOJ96EmNm+anRwbqAUTyWoZQAp0tg/6/pjwOwnyaeMrDlzMZih+7xgEtC6AUFcjQkmmpZTs3GToUCx634R8=";
+    </script>
+    
+        <script id="html_badge_script2" src="https://www.genspark.ai/html_badge.js"></script>
+        
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

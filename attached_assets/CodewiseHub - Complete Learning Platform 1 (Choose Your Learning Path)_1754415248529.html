@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodewiseHub - Complete Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs/loader.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .kid-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .teen-gradient {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .account-type-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .account-type-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .account-type-option.selected {
+            border-color: #3B82F6;
+            background-color: #EBF8FF;
+        }
+        
+        .blockly-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .monaco-editor-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .robot-simulator {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-avatar {
+            width: 60px;
+            height: 60px;
+            background: #4299e1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .subscription-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .subscription-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .subscription-card.selected {
+            border-color: #3B82F6;
+            background-color: #EBF8FF;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .user-info {
+            display: none;
+        }
+        
+        .user-info.active {
+            display: flex;
+        }
+        
+        .course-section {
+            display: none;
+        }
+        
+        .course-section.active {
+            display: block;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        .simple-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .block-item {
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .block-item:hover {
+            background: #e5e7eb;
+            border-color: #3B82F6;
+        }
+        
+        .block-item.selected {
+            background: #3B82F6;
+            color: white;
+            border-color: #2563EB;
+        }
+        
+        .robot-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .robot-control-btn {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .robot-control-btn:hover {
+            background: #2563EB;
+        }
+        
+        .age-locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .success-message {
+            color: #10b981;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .loading-spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3B82F6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-800">CodewiseHub</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Home</a>
+                        <a href="#courses" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium course-nav hidden">Courses</a>
+                        <a href="#coding-lab" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium coding-nav hidden">Coding Lab</a>
+                        <a href="#robotics" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium robotics-nav hidden">Robotics</a>
+                        <a href="#ai-tutor" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium ai-nav hidden">AI Tutor</a>
+                        <div class="user-info" id="userInfo">
+                            <span class="text-sm text-gray-600 mr-4">
+                                <i class="fas fa-user mr-1"></i>
+                                <span id="userName">Guest</span> | 
+                                <span id="userCode">No Code</span>
+                            </span>
+                            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">
+                                <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                            </button>
+                        </div>
+                        <div class="auth-buttons" id="authButtons">
+                            <button onclick="openSignInModal()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mr-2">
+                                <i class="fas fa-sign-in-alt mr-1"></i>Sign In
+                            </button>
+                            <button onclick="openSignUpModal()" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
+                                <i class="fas fa-user-plus mr-1"></i>Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                    Learn to Code.
+                    <span class="block text-yellow-300">Create Amazing Things!</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+                    Join thousands of students learning to code with our interactive platform. 
+                    From visual programming to advanced development - we've got you covered!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="openSignUpModal()" class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition bounce-animation">
+                        <i class="fas fa-rocket mr-2"></i>Start Learning Now
+                    </button>
+                    <button onclick="scrollToSection('courses')" class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        <i class="fas fa-play mr-2"></i>View Courses
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Age Selection -->
+    <section id="courses" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Learning Path!</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Select your age group to discover courses designed just for you
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Little Coders (6-11) -->
+                <div class="course-card kid-gradient p-8 rounded-2xl shadow-lg text-center">
+                    <div class="text-6xl mb-4">🧒</div>
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4">Little Coders</h3>
+                    <p class="text-purple-700 mb-4">Ages 6-11</p>
+                    <div class="text-sm text-purple-600 mb-6">
+                        <i class="fas fa-puzzle-piece mr-2"></i>Visual Block Programming<br>
+                        <i class="fas fa-robot mr-2"></i>Simple Robot Control<br>
+                        <i class="fas fa-palette mr-2"></i>Creative Art Projects<br>
+                        <i class="fas fa-gamepad mr-2"></i>Fun Interactive Games
+                    </div>
+                    <div class="text-sm text-purple-600 mb-6">
+                        <p><strong>Courses Available:</strong></p>
+                        <p>• Block Programming Adventures</p>
+                        <p>• Robot Friends</p>
+                        <p>• Creative Art Coding</p>
+                        <p>• Interactive Stories</p>
+                    </div>
+                    <button onclick="openSignUpModal()" class="bg-purple-500 text-white px-6 py-3 rounded-full font-bold hover:bg-purple-600 transition">
+                        Start My Journey! 🚀
+                    </button>
+                </div>
+
+                <!-- Teen Developers (12-18) -->
+                <div class="course-card teen-gradient p-8 rounded-2xl shadow-lg text-center">
+                    <div class="text-6xl mb-4">🧑‍💻</div>
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Teen Developers</h3>
+                    <p class="text-blue-700 mb-4">Ages 12-18</p>
+                    <div class="text-sm text-blue-600 mb-6">
+                        <i class="fas fa-code mr-2"></i>Professional Code Editor<br>
+                        <i class="fas fa-globe mr-2"></i>Web Development<br>
+                        <i class="fas fa-mobile-alt mr-2"></i>Mobile App Creation<br>
+                        <i class="fas fa-brain mr-2"></i>AI & Prompt Engineering
+                    </div>
+                    <div class="text-sm text-blue-600 mb-6">
+                        <p><strong>Courses Available:</strong></p>
+                        <p>• Web Development</p>
+                        <p>• Python Programming</p>
+                        <p>• JavaScript Mastery</p>
+                        <p>• Prompt Engineering</p>
+                    </div>
+                    <button onclick="openSignUpModal()" class="bg-blue-500 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-600 transition">
+                        Level Up! 💪
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Content (Shows after login) -->
+    <section id="little-coders-content" class="course-section py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Little Coders Courses</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Fun, interactive courses designed for ages 6-11
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Course 1: Block Programming -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-puzzle-piece text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Block Programming Adventures</h3>
+                        <p class="text-gray-600 mb-4">Learn programming with colorful blocks! Drag and drop to create amazing programs without typing.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>6 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button onclick="openCodingLab('visual')" class="w-full mt-4 bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 2: Robot Friends -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Robot Friends</h3>
+                        <p class="text-gray-600 mb-4">Control virtual robots and make them move, dance, and solve puzzles!</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>5 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button onclick="openRoboticsLab('simple')" class="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 3: Creative Art -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center">
+                        <i class="fas fa-palette text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Creative Art Coding</h3>
+                        <p class="text-gray-600 mb-4">Create beautiful digital art using code! Draw patterns, animations, and interactive artwork.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>4 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button onclick="openCodingLab('art')" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 4: Interactive Stories -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+                        <i class="fas fa-book text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Interactive Stories</h3>
+                        <p class="text-gray-600 mb-4">Create animated stories with characters, sounds, and interactive elements!</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>6 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button onclick="openCodingLab('story')" class="w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Teen Developers Content -->
+    <section id="teen-developers-content" class="course-section py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Teen Developers Courses</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Professional development courses for ages 12-18
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Course 1: Web Development -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-globe text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Web Development</h3>
+                        <p class="text-gray-600 mb-4">Learn HTML, CSS, JavaScript and build professional websites with our Monaco editor.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>12 lessons
+                            </span>
+                            <span class="text-sm text-blue-600 font-bold">Premium</span>
+                        </div>
+                        <button onclick="openCodingLab('monaco')" class="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 2: Python Programming -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                        <i class="fab fa-python text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Python Programming</h3>
+                        <p class="text-gray-600 mb-4">Master Python programming with data science, automation, and web development projects.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>15 lessons
+                            </span>
+                            <span class="text-sm text-blue-600 font-bold">Premium</span>
+                        </div>
+                        <button onclick="openCodingLab('python')" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 3: JavaScript Mastery -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-yellow-500 to-orange-600 flex items-center justify-center">
+                        <i class="fab fa-js-square text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">JavaScript Mastery</h3>
+                        <p class="text-gray-600 mb-4">Advanced JavaScript concepts, frameworks, and modern web development techniques.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>18 lessons
+                            </span>
+                            <span class="text-sm text-blue-600 font-bold">Premium</span>
+                        </div>
+                        <button onclick="openCodingLab('javascript')" class="w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course 4: Prompt Engineering -->
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Prompt Engineering</h3>
+                        <p class="text-gray-600 mb-4">Learn to interact with AI systems effectively and create powerful AI-driven applications.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>8 lessons
+                            </span>
+                            <span class="text-sm text-blue-600 font-bold">Premium</span>
+                        </div>
+                        <button onclick="openCodingLab('prompt')" class="w-full mt-4 bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Start Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coding Lab Section -->
+    <section id="coding-lab" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Interactive Coding Lab</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Practice coding with our age-appropriate programming environments
+                </p>
+            </div>
+
+            <!-- Visual Blocks Editor (Little Coders) -->
+            <div id="visual-coding-lab" class="coding-environment hidden">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Simple Visual Blocks -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Visual Programming Blocks</h3>
+                        <div class="simple-blocks">
+                            <div class="block-item" onclick="addBlock('move')">
+                                <i class="fas fa-arrow-right text-2xl mb-2"></i>
+                                <p class="text-sm">Move</p>
+                            </div>
+                            <div class="block-item" onclick="addBlock('turn')">
+                                <i class="fas fa-redo text-2xl mb-2"></i>
+                                <p class="text-sm">Turn</p>
+                            </div>
+                            <div class="block-item" onclick="addBlock('color')">
+                                <i class="fas fa-palette text-2xl mb-2"></i>
+                                <p class="text-sm">Color</p>
+                            </div>
+                            <div class="block-item" onclick="addBlock('sound')">
+                                <i class="fas fa-volume-up text-2xl mb-2"></i>
+                                <p class="text-sm">Sound</p>
+                            </div>
+                            <div class="block-item" onclick="addBlock('repeat')">
+                                <i class="fas fa-sync text-2xl mb-2"></i>
+                                <p class="text-sm">Repeat</p>
+                            </div>
+                            <div class="block-item" onclick="addBlock('wait')">
+                                <i class="fas fa-clock text-2xl mb-2"></i>
+                                <p class="text-sm">Wait</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 mt-4">
+                            <button onclick="runSimpleCode()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                                <i class="fas fa-play mr-2"></i>Run
+                            </button>
+                            <button onclick="clearSimpleCode()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simple Output Area -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Output</h3>
+                        <div id="simple-output" class="bg-white rounded-lg p-4 h-64 overflow-auto border-2 border-gray-200 mb-4">
+                            <div id="simple-character" class="w-8 h-8 bg-blue-500 rounded-full mx-auto"></div>
+                        </div>
+                        <div id="simple-code-display" class="bg-gray-100 rounded-lg p-4 min-h-20">
+                            <p class="text-sm text-gray-600">Your code will appear here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monaco Editor (Teen Developers) -->
+            <div id="monaco-coding-lab" class="coding-environment hidden">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Monaco Editor -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Professional Code Editor</h3>
+                        <div class="mb-4">
+                            <select id="monaco-language" onchange="changeLanguage()" class="px-4 py-2 border rounded-lg mr-4">
+                                <option value="javascript">JavaScript</option>
+                                <option value="python">Python</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                            </select>
+                        </div>
+                        <div id="monaco-container" class="monaco-editor-container"></div>
+                        <div class="flex gap-4 mt-4">
+                            <button onclick="runMonacoCode()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                                <i class="fas fa-play mr-2"></i>Run Code
+                            </button>
+                            <button onclick="saveMonacoCode()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                <i class="fas fa-save mr-2"></i>Save
+                            </button>
+                            <button onclick="clearMonacoCode()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Monaco Output Area -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Console Output</h3>
+                        <div id="monaco-output" class="bg-black text-green-400 rounded-lg p-4 h-64 overflow-auto border-2 border-gray-200 mb-4 font-mono text-sm">
+                            <p>Ready to run your code...</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="clearMonacoOutput()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                <i class="fas fa-broom mr-2"></i>Clear Output
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Robotics Section -->
+    <section id="robotics" class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Robotics Playground</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Program virtual robots and learn robotics concepts through fun, interactive challenges
+                </p>
+            </div>
+
+            <!-- Simple Robotics (Little Coders) -->
+            <div id="simple-robotics" class="robotics-environment hidden">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Simple Robot Controls -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Easy Robot Controls</h3>
+                        <div class="robot-controls">
+                            <button class="robot-control-btn" onclick="addRobotCommand('forward')">
+                                <i class="fas fa-arrow-up"></i><br>Forward
+                            </button>
+                            <button class="robot-control-btn" onclick="addRobotCommand('left')">
+                                <i class="fas fa-arrow-left"></i><br>Left
+                            </button>
+                            <button class="robot-control-btn" onclick="addRobotCommand('right')">
+                                <i class="fas fa-arrow-right"></i><br>Right
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-bold mb-2">Robot Commands:</h4>
+                            <div id="robot-commands" class="bg-gray-100 rounded-lg p-4 min-h-20">
+                                <p class="text-sm text-gray-600">Add commands using the buttons above</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="runRobotCommands()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                <i class="fas fa-robot mr-2"></i>Run Robot
+                            </button>
+                            <button onclick="clearRobotCommands()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simple Robot Simulator -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Robot World</h3>
+                        <div id="simple-robot-simulator" class="robot-simulator rounded-lg">
+                            <div id="simple-robot-avatar" class="robot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <!-- Simple Grid overlay -->
+                            <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-gray-600">Use the controls to move your robot around!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Robotics (Teen Developers) -->
+            <div id="advanced-robotics" class="robotics-environment hidden">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Advanced Robot Programming -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Advanced Robot Programming</h3>
+                        <div id="advanced-robot-blockly" class="blockly-container mb-4"></div>
+                        <div class="flex gap-4">
+                            <button onclick="runAdvancedRobotCode()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                <i class="fas fa-robot mr-2"></i>Run Robot
+                            </button>
+                            <button onclick="resetAdvancedRobot()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                                <i class="fas fa-redo mr-2"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Robot Simulator -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Advanced Robot Simulator</h3>
+                        <div id="advanced-robot-simulator" class="robot-simulator rounded-lg">
+                            <div id="advanced-robot-avatar" class="robot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <!-- Advanced Grid overlay -->
+                            <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-gray-600">Program your robot using advanced blocks and sensors!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Tutor Section -->
+    <section id="ai-tutor" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">AI Learning Assistant</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Get personalized help and guidance from our AI tutor
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-1 gap-8 max-w-4xl mx-auto">
+                <!-- AI Chat Interface -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Chat with AI Tutor</h3>
+                    <div id="ai-chat-container" class="bg-white rounded-lg p-4 h-64 overflow-y-auto mb-4">
+                        <div class="flex items-start mb-4">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="bg-blue-100 rounded-lg p-3 max-w-sm">
+                                <p class="text-sm">Hi there! I'm your AI coding tutor. I can help you with programming concepts, debugging, and creating projects. What would you like to learn about?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="ai-chat-input" placeholder="Ask me anything about coding..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="handleAIChatKeyPress(event)">
+                        <button onclick="sendAIMessage()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Tracking -->
+    <section id="progress-section" class="py-16 bg-gray-100 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Your Learning Progress</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Track your achievements and see how far you've come!
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Progress Circle -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Overall Progress</h3>
+                    <div class="relative w-32 h-32 mx-auto mb-4">
+                        <svg class="w-full h-full progress-ring">
+                            <circle cx="64" cy="64" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                            <circle id="progress-circle" cx="64" cy="64" r="40" stroke="#10b981" stroke-width="8" fill="none" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="progress-text" class="text-2xl font-bold text-gray-800">0%</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">Keep going! You're doing great!</p>
+                </div>
+
+                <!-- Achievements -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Achievements</h3>
+                    <div id="achievements-list" class="space-y-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">First Steps</p>
+                                <p class="text-sm text-gray-600">Completed your first lesson</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Stats -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Learning Stats</h3>
+                    <div id="learning-stats" class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700">Lessons Completed</span>
+                                <span class="text-sm text-gray-700">0/10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sign In Modal -->
+    <div id="sign-in-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Sign In to CodewiseHub</h2>
+                <button onclick="closeModal('sign-in-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="sign-in-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="sign-in-email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="sign-in-password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="remember-me" class="mr-2">
+                        <span class="text-sm text-gray-600">Remember me</span>
+                    </label>
+                </div>
+                <div id="sign-in-error" class="error-message mb-4 hidden"></div>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                    <span id="sign-in-button-text">Sign In</span>
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-600">Don't have an account? 
+                    <button onclick="openSignUpModal()" class="text-blue-600 hover:text-blue-800">Sign up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="sign-up-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Create Your Account</h2>
+                <button onclick="closeModal('sign-up-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Step 1: Account Type Selection -->
+            <div id="signup-step-1" class="form-step active">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Choose Your Account Type</h3>
+                <div class="space-y-4">
+                    <div id="student-option" class="account-type-option bg-white border-2 border-gray-200 rounded-lg p-4" onclick="selectAccountType('student')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white mr-4">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Student</h4>
+                                <p class="text-sm text-gray-600">I want to learn coding</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="teacher-option" class="account-type-option bg-white border-2 border-gray-200 rounded-lg p-4" onclick="selectAccountType('teacher')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white mr-4">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Teacher</h4>
+                                <p class="text-sm text-gray-600">I want to teach students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="parent-option" class="account-type-option bg-white border-2 border-gray-200 rounded-lg p-4" onclick="selectAccountType('parent')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white mr-4">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Parent</h4>
+                                <p class="text-sm text-gray-600">I want to monitor my child</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="selected-account-type" value="">
+                <div class="mt-6">
+                    <button id="next-step-1" onclick="nextStep(1)" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition" disabled>
+                        Next Step
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Personal Information -->
+            <div id="signup-step-2" class="form-step">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Personal Information</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="signup-name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="signup-email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="signup-password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <!-- Student-specific fields -->
+                    <div id="student-fields" class="hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Age Group</label>
+                            <select id="student-age-group" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Age Group</option>
+                                <option value="kids">Little Coders (Ages 6-11)</option>
+                                <option value="teens">Teen Developers (Ages 12-18)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Grade Level</label>
+                            <select id="student-grade" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Grade</option>
+                                <option value="R">Grade R</option>
+                                <option value="1">Grade 1</option>
+                                <option value="2">Grade 2</option>
+                                <option value="3">Grade 3</option>
+                                <option value="4">Grade 4</option>
+                                <option value="5">Grade 5</option>
+                                <option value="6">Grade 6</option>
+                                <option value="7">Grade 7</option>
+                                <option value="8">Grade 8</option>
+                                <option value="9">Grade 9</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Teacher-specific fields -->
+                    <div id="teacher-fields" class="hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <input type="text" id="teacher-subject" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Computer Science">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">School Name</label>
+                            <input type="text" id="teacher-school" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Parent-specific fields -->
+                    <div id="parent-fields" class="hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Child's Account Number</label>
+                            <input type="text" id="parent-child-code" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., CW-2024-001234">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="parent-phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-4">
+                    <button onclick="previousStep(2)" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">
+                        Previous
+                    </button>
+                    <button onclick="nextStep(2)" class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                        Next Step
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Subscription Selection -->
+            <div id="signup-step-3" class="form-step">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">Choose Your Subscription</h3>
+                <div id="subscription-options" class="space-y-4">
+                    <!-- Student subscriptions -->
+                    <div id="student-subscriptions" class="hidden">
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('student-basic')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Basic (Free)</h4>
+                                    <p class="text-sm text-gray-600">3 courses, basic features</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">R0/month</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('student-premium')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Premium</h4>
+                                    <p class="text-sm text-gray-600">All courses, advanced features</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-blue-600">R179/month</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('student-family')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Family</h4>
+                                    <p class="text-sm text-gray-600">Up to 3 children, all features</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-purple-600">R329/month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Teacher subscriptions -->
+                    <div id="teacher-subscriptions" class="hidden">
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('teacher-individual')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Individual</h4>
+                                    <p class="text-sm text-gray-600">30 students, basic AI tools</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">R249/month</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('teacher-school')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">School</h4>
+                                    <p class="text-sm text-gray-600">Unlimited students, advanced tools</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-blue-600">R1,499/month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parent subscriptions -->
+                    <div id="parent-subscriptions" class="hidden">
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('parent-single')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Single Child</h4>
+                                    <p class="text-sm text-gray-600">Monitor 1 child</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">R89/month</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subscription-card border-2 border-gray-200 rounded-lg p-4" onclick="selectSubscription('parent-family')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Family Plan</h4>
+                                    <p class="text-sm text-gray-600">Monitor up to 3 children</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-blue-600">R149/month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="selected-subscription" value="">
+                <div id="signup-error" class="error-message mt-4 hidden"></div>
+                <div class="mt-6 flex gap-4">
+                    <button onclick="previousStep(3)" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">
+                        Previous
+                    </button>
+                    <button onclick="createAccount()" class="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                        <span id="create-account-button-text">Create Account</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">CodewiseHub</h3>
+                    <p class="text-gray-400">Empowering the next generation with innovative coding education for all ages.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white">Home</a></li>
+                        <li><a href="#courses" class="hover:text-white">Courses</a></li>
+                        <li><a href="#coding-lab" class="hover:text-white">Coding Lab</a></li>
+                        <li><a href="#robotics" class="hover:text-white">Robotics</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 CodewiseHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Firebase Configuration - Update with your actual values
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9Hc-DuH8jXk7X8686A2o2jbvPqVd77no",
+            authDomain: "codewise-hub-production.firebaseapp.com",
+            projectId: "codewise-hub-production",
+            storageBucket: "codewise-hub-production.firebasestorage.app",
+            messagingSenderId: "1067822471514",
+            appId: "1:1067822471514:web:4ac831dede5b3bf49afb63",
+            measurementId: "G-189VFGNKXS"
+        };
+
+        // Global variables - declared in global scope to fix lexical declaration error
+        var auth, db, storage;
+        var currentUser = null;
+        var monacoEditor = null;
+        var currentAccountType = '';
+        var currentStep = 1;
+        var simpleCodeBlocks = [];
+        var robotCommands = [];
+        var robotPosition = { x: 50, y: 50 };
+        var robotDirection = 0;
+
+        // Initialize Firebase and application
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                storage = firebase.storage();
+
+                console.log('Firebase initialized successfully');
+
+                // Set up authentication state listener
+                auth.onAuthStateChanged(function(user) {
+                    if (user) {
+                        currentUser = user;
+                        loadUserProfile(user.uid);
+                    } else {
+                        currentUser = null;
+                        showGuestInterface();
+                    }
+                });
+
+                // Initialize other components
+                initializeEventListeners();
+                initializeMonacoEditor();
+                
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                showError('Failed to initialize application. Please refresh the page.');
+            }
+        });
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Sign-in form submission
+            document.getElementById('sign-in-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                signIn();
+            });
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Authentication functions
+        async function signIn() {
+            const email = document.getElementById('sign-in-email').value;
+            const password = document.getElementById('sign-in-password').value;
+            const errorElement = document.getElementById('sign-in-error');
+            const buttonText = document.getElementById('sign-in-button-text');
+
+            try {
+                // Show loading state
+                buttonText.innerHTML = '<span class="loading-spinner"></span>Signing in...';
+                errorElement.classList.add('hidden');
+
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                // Close modal and show success
+                closeModal('sign-in-modal');
+                showSuccess('Successfully signed in!');
+
+            } catch (error) {
+                console.error('Sign in error:', error);
+                errorElement.textContent = getErrorMessage(error.code);
+                errorElement.classList.remove('hidden');
+            } finally {
+                buttonText.textContent = 'Sign In';
+            }
+        }
+
+        async function loadUserProfile(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    updateUserInterface(userData);
+                    showUserContent(userData);
+                } else {
+                    console.log('User profile not found');
+                    showGuestInterface();
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                showError('Failed to load user profile');
+            }
+        }
+
+        function updateUserInterface(userData) {
+            // Update user info display
+            document.getElementById('userName').textContent = userData.displayName || 'User';
+            document.getElementById('userCode').textContent = userData.accountNumber || 'No Code';
+            
+            // Show user info, hide auth buttons
+            document.getElementById('userInfo').classList.add('active');
+            document.getElementById('authButtons').style.display = 'none';
+            
+            // Show navigation links
+            document.querySelectorAll('.course-nav, .coding-nav, .robotics-nav, .ai-nav').forEach(nav => {
+                nav.classList.remove('hidden');
+            });
+            
+            // Show progress section
+            document.getElementById('progress-section').classList.remove('hidden');
+        }
+
+        function showUserContent(userData) {
+            // Show age-appropriate content
+            if (userData.role === 'student') {
+                if (userData.ageGroup === 'kids') {
+                    document.getElementById('little-coders-content').classList.add('active');
+                } else if (userData.ageGroup === 'teens') {
+                    document.getElementById('teen-developers-content').classList.add('active');
+                }
+            }
+        }
+
+        function showGuestInterface() {
+            // Hide user info, show auth buttons
+            document.getElementById('userInfo').classList.remove('active');
+            document.getElementById('authButtons').style.display = 'block';
+            
+            // Hide navigation links
+            document.querySelectorAll('.course-nav, .coding-nav, .robotics-nav, .ai-nav').forEach(nav => {
+                nav.classList.add('hidden');
+            });
+            
+            // Hide course content
+            document.querySelectorAll('.course-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Hide progress section
+            document.getElementById('progress-section').classList.add('hidden');
+        }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                showSuccess('Successfully signed out!');
+                showGuestInterface();
+            } catch (error) {
+                console.error('Logout error:', error);
+                showError('Failed to sign out');
+            }
+        }
+
+        // Modal functions
+        function openSignInModal() {
+            document.getElementById('sign-in-modal').classList.add('active');
+        }
+
+        function openSignUpModal() {
+            document.getElementById('sign-up-modal').classList.add('active');
+            resetSignUpForm();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Sign-up functions
+        function resetSignUpForm() {
+            currentStep = 1;
+            currentAccountType = '';
+            
+            // Reset form steps
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('signup-step-1').classList.add('active');
+            
+            // Reset selections
+            document.querySelectorAll('.account-type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelectorAll('.subscription-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Reset form fields
+            document.getElementById('sign-up-modal').querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            document.getElementById('sign-up-modal').querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            
+            // Reset button state
+            document.getElementById('next-step-1').disabled = true;
+            
+            // Hide error messages
+            document.getElementById('signup-error').classList.add('hidden');
+        }
+
+        function selectAccountType(type) {
+            currentAccountType = type;
+            
+            // Update visual selection
+            document.querySelectorAll('.account-type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById(type + '-option').classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('selected-account-type').value = type;
+            
+            // Enable next button
+            document.getElementById('next-step-1').disabled = false;
+        }
+
+        function nextStep(step) {
+            if (step === 1) {
+                if (!currentAccountType) {
+                    showError('Please select an account type');
+                    return;
+                }
+                showPersonalInfoFields();
+                showStep(2);
+            } else if (step === 2) {
+                if (!validatePersonalInfo()) {
+                    return;
+                }
+                showSubscriptionOptions();
+                showStep(3);
+            }
+        }
+
+        function previousStep(step) {
+            showStep(step - 1);
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('signup-step-' + stepNumber).classList.add('active');
+            currentStep = stepNumber;
+        }
+
+        function showPersonalInfoFields() {
+            // Hide all specific fields
+            document.querySelectorAll('#student-fields, #teacher-fields, #parent-fields').forEach(field => {
+                field.classList.add('hidden');
+            });
+            
+            // Show relevant fields
+            document.getElementById(currentAccountType + '-fields').classList.remove('hidden');
+        }
+
+        function showSubscriptionOptions() {
+            // Hide all subscription options
+            document.querySelectorAll('#student-subscriptions, #teacher-subscriptions, #parent-subscriptions').forEach(option => {
+                option.classList.add('hidden');
+            });
+            
+            // Show relevant subscription options
+            document.getElementById(currentAccountType + '-subscriptions').classList.remove('hidden');
+        }
+
+        function validatePersonalInfo() {
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            
+            if (!name || !email || !password) {
+                showError('Please fill in all required fields');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long');
+                return false;
+            }
+            
+            // Validate specific fields based on account type
+            if (currentAccountType === 'student') {
+                const ageGroup = document.getElementById('student-age-group').value;
+                const grade = document.getElementById('student-grade').value;
+                
+                if (!ageGroup || !grade) {
+                    showError('Please select age group and grade level');
+                    return false;
+                }
+            } else if (currentAccountType === 'teacher') {
+                const subject = document.getElementById('teacher-subject').value.trim();
+                const school = document.getElementById('teacher-school').value.trim();
+                
+                if (!subject || !school) {
+                    showError('Please fill in subject and school information');
+                    return false;
+                }
+            } else if (currentAccountType === 'parent') {
+                const childCode = document.getElementById('parent-child-code').value.trim();
+                const phone = document.getElementById('parent-phone').value.trim();
+                
+                if (!childCode || !phone) {
+                    showError('Please fill in child account number and phone number');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function selectSubscription(subscriptionId) {
+            // Update visual selection
+            document.querySelectorAll('.subscription-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.subscription-card').classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('selected-subscription').value = subscriptionId;
+        }
+
+        async function createAccount() {
+            const subscription = document.getElementById('selected-subscription').value;
+            const buttonText = document.getElementById('create-account-button-text');
+            
+            if (!subscription) {
+                showError('Please select a subscription plan');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                buttonText.innerHTML = '<span class="loading-spinner"></span>Creating Account...';
+                
+                // Get form data
+                const formData = getFormData();
+                
+                // Create Firebase authentication account
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    formData.email,
+                    formData.password
+                );
+                
+                // Generate account number for students
+                if (currentAccountType === 'student') {
+                    formData.accountNumber = generateAccountNumber();
+                }
+                
+                // Create user profile in Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    ...formData,
+                    subscription: subscription,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Close modal and show success
+                closeModal('sign-up-modal');
+                showSuccess('Account created successfully! Welcome to CodewiseHub!');
+                
+            } catch (error) {
+                console.error('Account creation error:', error);
+                showError(getErrorMessage(error.code));
+            } finally {
+                buttonText.textContent = 'Create Account';
+            }
+        }
+
+        function getFormData() {
+            const baseData = {
+                role: currentAccountType,
+                displayName: document.getElementById('signup-name').value.trim(),
+                email: document.getElementById('signup-email').value.trim()
+            };
+            
+            if (currentAccountType === 'student') {
+                baseData.ageGroup = document.getElementById('student-age-group').value;
+                baseData.grade = document.getElementById('student-grade').value;
+            } else if (currentAccountType === 'teacher') {
+                baseData.subject = document.getElementById('teacher-subject').value.trim();
+                baseData.school = document.getElementById('teacher-school').value.trim();
+            } else if (currentAccountType === 'parent') {
+                baseData.childAccountNumber = document.getElementById('parent-child-code').value.trim();
+                baseData.phone = document.getElementById('parent-phone').value.trim();
+            }
+            
+            return baseData;
+        }
+
+        function generateAccountNumber() {
+            const year = new Date().getFullYear();
+            const randomNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            return `CW-${year}-${randomNumber}`;
+        }
+
+        // Coding Lab functions
+        function openCodingLab(type) {
+            scrollToSection('coding-lab');
+            
+            // Hide all coding environments
+            document.querySelectorAll('.coding-environment').forEach(env => {
+                env.classList.add('hidden');
+            });
+            
+            // Show appropriate environment
+            if (type === 'visual' || type === 'art' || type === 'story') {
+                document.getElementById('visual-coding-lab').classList.remove('hidden');
+            } else if (type === 'monaco' || type === 'python' || type === 'javascript' || type === 'prompt') {
+                document.getElementById('monaco-coding-lab').classList.remove('hidden');
+            }
+        }
+
+        function addBlock(blockType) {
+            const blockData = {
+                type: blockType,
+                id: Date.now()
+            };
+            
+            simpleCodeBlocks.push(blockData);
+            updateSimpleCodeDisplay();
+        }
+
+        function updateSimpleCodeDisplay() {
+            const display = document.getElementById('simple-code-display');
+            if (simpleCodeBlocks.length === 0) {
+                display.innerHTML = '<p class="text-sm text-gray-600">Your code will appear here...</p>';
+                return;
+            }
+            
+            const codeText = simpleCodeBlocks.map(block => {
+                switch(block.type) {
+                    case 'move': return 'Move forward';
+                    case 'turn': return 'Turn right';
+                    case 'color': return 'Change color';
+                    case 'sound': return 'Play sound';
+                    case 'repeat': return 'Repeat 3 times';
+                    case 'wait': return 'Wait 1 second';
+                    default: return block.type;
+                }
+            }).join('<br>');
+            
+            display.innerHTML = codeText;
+        }
+
+        function runSimpleCode() {
+            const character = document.getElementById('simple-character');
+            let delay = 0;
+            
+            simpleCodeBlocks.forEach((block, index) => {
+                setTimeout(() => {
+                    switch(block.type) {
+                        case 'move':
+                            character.style.transform = `translateX(${(index + 1) * 20}px)`;
+                            break;
+                        case 'turn':
+                            character.style.transform += ` rotate(${(index + 1) * 90}deg)`;
+                            break;
+                        case 'color':
+                            const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
+                            character.style.backgroundColor = colors[index % colors.length];
+                            break;
+                        case 'sound':
+                            // Play a simple beep sound
+                            playBeep();
+                            break;
+                    }
+                }, delay);
+                delay += 1000; // 1 second between each action
+            });
+            
+            showSuccess('Code executed successfully!');
+        }
+
+        function clearSimpleCode() {
+            simpleCodeBlocks = [];
+            updateSimpleCodeDisplay();
+            
+            // Reset character
+            const character = document.getElementById('simple-character');
+            character.style.transform = '';
+            character.style.backgroundColor = '#3B82F6';
+            
+            showSuccess('Code cleared!');
+        }
+
+        // Monaco Editor functions
+        function initializeMonacoEditor() {
+            // Initialize Monaco Editor when needed
+            if (typeof require !== 'undefined') {
+                require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs' } });
+                require(['vs/editor/editor.main'], function () {
+                    monacoEditor = monaco.editor.create(document.getElementById('monaco-container'), {
+                        value: '// Welcome to CodewiseHub!\n// Start coding here...\n\nconsole.log("Hello, CodewiseHub!");',
+                        language: 'javascript',
+                        theme: 'vs-dark',
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        wordWrap: 'on'
+                    });
+                });
+            }
+        }
+
+        function changeLanguage() {
+            const language = document.getElementById('monaco-language').value;
+            if (monacoEditor) {
+                const model = monacoEditor.getModel();
+                monaco.editor.setModelLanguage(model, language);
+                
+                // Set appropriate starter code
+                const starterCode = {
+                    javascript: '// JavaScript Code\nconsole.log("Hello, JavaScript!");',
+                    python: '# Python Code\nprint("Hello, Python!")',
+                    html: '<!DOCTYPE html>\n<html>\n<head>\n    <title>My Page</title>\n</head>\n<body>\n    <h1>Hello, HTML!</h1>\n</body>\n</html>',
+                    css: '/* CSS Code */\nbody {\n    font-family: Arial, sans-serif;\n    background-color: #f0f0f0;\n}'
+                };
+                
+                monacoEditor.setValue(starterCode[language] || '');
+            }
+        }
+
+        function runMonacoCode() {
+            if (!monacoEditor) {
+                showError('Editor not initialized');
+                return;
+            }
+            
+            const code = monacoEditor.getValue();
+            const language = document.getElementById('monaco-language').value;
+            const output = document.getElementById('monaco-output');
+            
+            try {
+                if (language === 'javascript') {
+                    // Create a safe execution environment
+                    const originalConsoleLog = console.log;
+                    let outputText = '';
+                    
+                    console.log = function(...args) {
+                        outputText += args.join(' ') + '\n';
+                    };
+                    
+                    // Execute the code
+                    eval(code);
+                    
+                    // Restore console.log
+                    console.log = originalConsoleLog;
+                    
+                    output.innerHTML = outputText || 'Code executed successfully!';
+                } else {
+                    output.innerHTML = `${language} code execution simulation:\n${code}`;
+                }
+                
+                showSuccess('Code executed successfully!');
+            } catch (error) {
+                output.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                showError('Code execution failed');
+            }
+        }
+
+        function saveMonacoCode() {
+            if (!monacoEditor) {
+                showError('Editor not initialized');
+                return;
+            }
+            
+            const code = monacoEditor.getValue();
+            const language = document.getElementById('monaco-language').value;
+            
+            // Save to localStorage for now
+            localStorage.setItem('codewise-monaco-code', code);
+            localStorage.setItem('codewise-monaco-language', language);
+            
+            showSuccess('Code saved successfully!');
+        }
+
+        function clearMonacoCode() {
+            if (monacoEditor) {
+                monacoEditor.setValue('');
+                showSuccess('Code cleared!');
+            }
+        }
+
+        function clearMonacoOutput() {
+            document.getElementById('monaco-output').innerHTML = 'Ready to run your code...';
+        }
+
+        // Robotics functions
+        function openRoboticsLab(type) {
+            scrollToSection('robotics');
+            
+            // Hide all robotics environments
+            document.querySelectorAll('.robotics-environment').forEach(env => {
+                env.classList.add('hidden');
+            });
+            
+            // Show appropriate environment
+            if (type === 'simple') {
+                document.getElementById('simple-robotics').classList.remove('hidden');
+            } else if (type === 'advanced') {
+                document.getElementById('advanced-robotics').classList.remove('hidden');
+            }
+        }
+
+        function addRobotCommand(command) {
+            robotCommands.push(command);
+            updateRobotCommandsDisplay();
+        }
+
+        function updateRobotCommandsDisplay() {
+            const display = document.getElementById('robot-commands');
+            if (robotCommands.length === 0) {
+                display.innerHTML = '<p class="text-sm text-gray-600">Add commands using the buttons above</p>';
+                return;
+            }
+            
+            const commandText = robotCommands.map(command => {
+                switch(command) {
+                    case 'forward': return '🤖 Move Forward';
+                    case 'left': return '🤖 Turn Left';
+                    case 'right': return '🤖 Turn Right';
+                    default: return command;
+                }
+            }).join('<br>');
+            
+            display.innerHTML = commandText;
+        }
+
+        function runRobotCommands() {
+            const robot = document.getElementById('simple-robot-avatar');
+            let delay = 0;
+            
+            robotCommands.forEach((command, index) => {
+                setTimeout(() => {
+                    switch(command) {
+                        case 'forward':
+                            robotPosition.y = Math.max(robotPosition.y - 40, 10);
+                            break;
+                        case 'left':
+                            robotDirection = (robotDirection - 90) % 360;
+                            break;
+                        case 'right':
+                            robotDirection = (robotDirection + 90) % 360;
+                            break;
+                    }
+                    
+                    robot.style.left = robotPosition.x + '%';
+                    robot.style.top = robotPosition.y + '%';
+                    robot.style.transform = `translate(-50%, -50%) rotate(${robotDirection}deg)`;
+                }, delay);
+                
+                delay += 1000; // 1 second between each command
+            });
+            
+            showSuccess('Robot commands executed!');
+        }
+
+        function clearRobotCommands() {
+            robotCommands = [];
+            updateRobotCommandsDisplay();
+            
+            // Reset robot position
+            robotPosition = { x: 50, y: 50 };
+            robotDirection = 0;
+            
+            const robot = document.getElementById('simple-robot-avatar');
+            robot.style.left = '50%';
+            robot.style.top = '50%';
+            robot.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+            
+            showSuccess('Robot commands cleared!');
+        }
+
+        // AI Tutor functions
+        function sendAIMessage() {
+            const input = document.getElementById('ai-chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage(message, 'user');
+            
+            // Clear input
+            input.value = '';
+            
+            // Generate AI response
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                addChatMessage(response, 'ai');
+            }, 1000);
+        }
+
+        function addChatMessage(message, sender) {
+            const container = document.getElementById('ai-chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start mb-4';
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex-1"></div>
+                    <div class="bg-blue-500 text-white rounded-lg p-3 max-w-sm">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-sm ml-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-blue-100 rounded-lg p-3 max-w-sm">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+                return 'Hello! I\'m here to help you learn coding. What would you like to know about?';
+            } else if (lowerMessage.includes('javascript')) {
+                return 'JavaScript is a powerful programming language! It\'s used to make websites interactive. Would you like to learn about variables, functions, or something else?';
+            } else if (lowerMessage.includes('python')) {
+                return 'Python is a great language for beginners! It\'s used for web development, data science, and AI. What specific Python topic interests you?';
+            } else if (lowerMessage.includes('html')) {
+                return 'HTML is the building blocks of websites! It uses tags to structure content. Want to learn about basic HTML tags?';
+            } else if (lowerMessage.includes('robot')) {
+                return 'Robot programming is fun! You can control robots using simple commands like move forward, turn left, and turn right. Try the robot challenges!';
+            } else if (lowerMessage.includes('help')) {
+                return 'I can help you with programming concepts, debugging, and project ideas. Just ask me about any coding topic!';
+            } else {
+                return 'That\'s an interesting question! I can help you with JavaScript, Python, HTML, CSS, robotics, and more. What specific topic would you like to explore?';
+            }
+        }
+
+        function handleAIChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        // Utility functions
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showError(message) {
+            // Create or update error notification
+            let errorDiv = document.getElementById('error-notification');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'error-notification';
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg z-50';
+                document.body.appendChild(errorDiv);
+            }
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            // Create or update success notification
+            let successDiv = document.getElementById('success-notification');
+            if (!successDiv) {
+                successDiv = document.createElement('div');
+                successDiv.id = 'success-notification';
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
+                document.body.appendChild(successDiv);
+            }
+            
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function getErrorMessage(errorCode) {
+            switch(errorCode) {
+                case 'auth/user-not-found':
+                case 'auth/invalid-login-credentials':
+                    return 'Invalid email or password. Please try again.';
+                case 'auth/email-already-in-use':
+                    return 'This email address is already registered. Please use a different email or sign in.';
+                case 'auth/weak-password':
+                    return 'Password must be at least 6 characters long.';
+                case 'auth/invalid-email':
+                    return 'Please enter a valid email address.';
+                case 'auth/too-many-requests':
+                    return 'Too many failed attempts. Please try again later.';
+                default:
+                    return 'An error occurred. Please try again.';
+            }
+        }
+
+        function playBeep() {
+            // Create a simple beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.3;
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDvkBy5TIeAytluIOKNcMpmIZ%2B4t9KakVaN7gSfGF5TjhzJ4P3YU57OFwhc0c0h05VLEvKUxgkTLNAtQLwFRsiUZlfZYF%2BVPmoA9MBplEO55hKJ33L0tp4mnF%2B1ay9i7rrQzZznYzLar%2Bkfw8wyVWRXZOYJ6ek49iJDaTuINcpKKGg0w8H3UpZQLqMekXUJHxbS2QmOnr3gkSk3cCcAqiLGs8InxSxB4%2BDf3esMAKBx%2Fxjfu5B%2B%2F%2By8a8q%2FE%2Bj%2B5eBn25gDjzk1KUrugNK7Ke%2B%2F1UgKqfnqZ%2BQSgde5z0OArE82HseAgL82wfR8Z6f6cPY1t8uCt3yZyfEVGvYF2QdJGWat%2BRu8dXoocF2SnPBoxmPv1c6MSRhY9orUmSguXI1mQfl0B4DrasyAT775AnXGVKsPy208af%2B2G5kkgR1Q4kZHQ05qmhSgLSwqHM2cR5LnU6odpO3oVO0pYtRiNVN7XlwtoxBcFceH6aWviV%2FskeXGEzVtuwGbDt%2FLa2bjn48Q%3D%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDvkBy5TIeAytluIOKNcMpmIZ+4t9KakVaN7gSfGF5TjhzJ4P3YU57OFwhc0c0h05VLEvKUxgkTLNAtQLwFRsiUZlfZYF+VPmoA9MBplEO55hKJ33L0tp4mnF+1ay9i7rrQzZznYzLar+kfw8wyVWRXZOYJ6ek49iJDaTuINcpKKGg0w8H3UpZQLqMekXUJHxbS2QmOnr3gkSk3cCcAqiLGs8InxSxB4+Df3esMAKBx/xjfu5B+/+y8a8q/E+j+5eBn25gDjzk1KUrugNK7Ke+/1UgKqfnqZ+QSgde5z0OArE82HseAgL82wfR8Z6f6cPY1t8uCt3yZyfEVGvYF2QdJGWat+Ru8dXoocF2SnPBoxmPv1c6MSRhY9orUmSguXI1mQfl0B4DrasyAT775AnXGVKsPy208af+2G5kkgR1Q4kZHQ05qmhSgLSwqHM2cR5LnU6odpO3oVO0pYtRiNVN7XlwtoxBcFceH6aWviV/skeXGEzVtuwGbDt/La2bjn48Q==";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

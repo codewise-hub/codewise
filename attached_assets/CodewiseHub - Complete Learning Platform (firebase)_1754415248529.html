@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodewiseHub - Complete Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .primary-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .highschool-gradient {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .blockly-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .monaco-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .age-selector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .age-selector:hover {
+            transform: scale(1.05);
+        }
+        
+        .robot-simulator {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-avatar {
+            width: 60px;
+            height: 60px;
+            background: #4299e1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+        
+        .pricing-card {
+            transition: transform 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .content-section {
+            margin-bottom: 3rem;
+        }
+        
+         {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                font-size: 12px;
+            }
+            
+            .modal {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-800">CodewiseHub</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Home</a>
+                        <a href="#courses" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Courses</a>
+                        <a href="#coding-lab" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Coding Lab</a>
+                        <a href="#robotics" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Robotics</a>
+                        <a href="#pricing" class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Pricing</a>
+                        <button id="auth-button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openModal('authModal')">Sign In</button>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg py-20 content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                    Explore. Learn. Code.
+                    <span class="block text-yellow-300">Together!</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+                    Dive into fun, interactive coding adventures designed for young minds. 
+                    Build amazing projects, learn with AI, and become a coding hero!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition bounce-animation" onclick="openModal('authModal')">
+                        <i class="fas fa-rocket mr-2"></i>Start Learning Now
+                    </button>
+                    <button class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition" onclick="scrollToSection('courses')">
+                        <i class="fas fa-play mr-2"></i>Explore Courses
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Age Selection -->
+    <section class="py-16 bg-white content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Learning Path!</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Select your school level to discover learning experiences designed just for you
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Primary School (Grades R-7) -->
+                <div class="age-selector primary-gradient p-8 rounded-2xl shadow-lg text-center" onclick="showAgeContent('primary')">
+                    <div class="text-6xl mb-4">🎓</div>
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4">Primary Coders</h3>
+                    <p class="text-purple-700 mb-4">Grades R-7 (Ages 5-13)</p>
+                    <div class="text-sm text-purple-600 mb-6">
+                        <i class="fas fa-puzzle-piece mr-2"></i>Visual Block Programming<br>
+                        <i class="fas fa-robot mr-2"></i>Robot Adventures<br>
+                        <i class="fas fa-paint-brush mr-2"></i>Creative Digital Art
+                    </div>
+                    <button class="bg-purple-500 text-white px-6 py-3 rounded-full font-bold hover:bg-purple-600 transition">
+                        Start My Journey! 🚀
+                    </button>
+                </div>
+
+                <!-- High School (Grades 8-12) -->
+                <div class="age-selector highschool-gradient p-8 rounded-2xl shadow-lg text-center" onclick="showAgeContent('highschool')">
+                    <div class="text-6xl mb-4">💻</div>
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">High School Developers</h3>
+                    <p class="text-blue-700 mb-4">Grades 8-12 (Ages 14-18)</p>
+                    <div class="text-sm text-blue-600 mb-6">
+                        <i class="fas fa-code mr-2"></i>Professional Code Editors<br>
+                        <i class="fas fa-brain mr-2"></i>AI & Prompt Engineering<br>
+                        <i class="fas fa-trophy mr-2"></i>Career Preparation
+                    </div>
+                    <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-600 transition">
+                        Level Up! 💪
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-16 bg-gray-100 content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Package</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Flexible pricing in ZAR to suit every learner, teacher, and parent
+                </p>
+            </div>
+
+            <!-- Student Packages -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Student Packages</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h4 class="text-xl font-bold mb-2">Basic</h4>
+                        <div class="text-3xl font-bold text-green-600 mb-4">FREE</div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>3 Free Courses</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Visual Block Editor</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Basic Progress Tracking</li>
+                            <li><i class="fas fa-times text-red-500 mr-2"></i>AI Tutor</li>
+                        </ul>
+                        <button class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                            Get Started
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center border-2 border-blue-500">
+                        <div class="text-4xl mb-4">⭐</div>
+                        <h4 class="text-xl font-bold mb-2">Premium</h4>
+                        <div class="text-3xl font-bold text-blue-600 mb-4">R179<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>All Courses</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Monaco Code Editor</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>AI Tutor Assistant</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced Analytics</li>
+                        </ul>
+                        <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            Most Popular
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">👨‍👩‍👧‍👦</div>
+                        <h4 class="text-xl font-bold mb-2">Family</h4>
+                        <div class="text-3xl font-bold text-purple-600 mb-4">R329<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Up to 3 Children</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>All Premium Features</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Parent Dashboard</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Family Progress Reports</li>
+                        </ul>
+                        <button class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Choose Family
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Packages -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Teacher Packages</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">👨‍🏫</div>
+                        <h4 class="text-xl font-bold mb-2">Individual</h4>
+                        <div class="text-3xl font-bold text-indigo-600 mb-4">R249<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Up to 30 Students</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Basic AI Content Tools</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Student Progress Tracking</li>
+                            <li><i class="fas fa-times text-red-500 mr-2"></i>School Analytics</li>
+                        </ul>
+                        <button class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">
+                            For Teachers
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">🏫</div>
+                        <h4 class="text-xl font-bold mb-2">Primary School</h4>
+                        <div class="text-3xl font-bold text-orange-600 mb-4">R1,499<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Unlimited Students</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced AI Tools</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>School Analytics</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Curriculum Alignment</li>
+                        </ul>
+                        <button class="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition">
+                            For Schools
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">🎓</div>
+                        <h4 class="text-xl font-bold mb-2">High School</h4>
+                        <div class="text-3xl font-bold text-red-600 mb-4">R1,999<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Unlimited Students</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Professional AI Tools</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced Analytics</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Career Preparation</li>
+                        </ul>
+                        <button class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition">
+                            For High Schools
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent Packages -->
+            <div>
+                <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Parent Packages</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">👤</div>
+                        <h4 class="text-xl font-bold mb-2">Single Child</h4>
+                        <div class="text-3xl font-bold text-teal-600 mb-4">R89<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>1 Child Monitoring</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Progress Reports</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Achievement Alerts</li>
+                            <li><i class="fas fa-times text-red-500 mr-2"></i>Advanced Analytics</li>
+                        </ul>
+                        <button class="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition">
+                            Monitor Child
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">👨‍👩‍👧</div>
+                        <h4 class="text-xl font-bold mb-2">Family</h4>
+                        <div class="text-3xl font-bold text-pink-600 mb-4">R149<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Up to 3 Children</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Family Dashboard</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Comparative Reports</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Time Management</li>
+                        </ul>
+                        <button class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition">
+                            Family Plan
+                        </button>
+                    </div>
+
+                    <div class="pricing-card bg-white rounded-xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-4">💎</div>
+                        <h4 class="text-xl font-bold mb-2">Premium</h4>
+                        <div class="text-3xl font-bold text-yellow-600 mb-4">R249<span class="text-sm">/month</span></div>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Up to 5 Children</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced Analytics</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Personal Consultant</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Priority Support</li>
+                        </ul>
+                        <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                            Premium Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-16 bg-white content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Popular Courses</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Explore our comprehensive curriculum designed for different school levels
+                </p>
+            </div>
+
+            <!-- Universal Courses -->
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-globe text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Introduction to Web Development</h3>
+                        <p class="text-gray-600 mb-4">Learn the fundamentals of web development, including HTML, CSS, and JavaScript. Build your first interactive website.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>8 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button class="w-full mt-4 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition">
+                            View Course
+                        </button>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+                        <i class="fab fa-js-square text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">JavaScript Essentials</h3>
+                        <p class="text-gray-600 mb-4">Master JavaScript fundamentals with interactive coding exercises and real-world projects.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>12 lessons
+                            </span>
+                            <span class="text-sm text-green-600 font-bold">FREE</span>
+                        </div>
+                        <button class="w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                            View Course
+                        </button>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">AI & Prompt Engineering</h3>
+                        <p class="text-gray-600 mb-4">Learn to communicate effectively with AI systems and harness the power of artificial intelligence.</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>6 lessons
+                            </span>
+                            <span class="text-sm text-blue-600 font-bold">PREMIUM</span>
+                        </div>
+                        <button class="w-full mt-4 bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            View Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Primary School Courses -->
+            <div id="primary-courses" class="hidden">
+                <h3 class="text-2xl font-bold text-center mb-8 text-purple-600">Primary School Courses</h3>
+                <div class="feature-grid">
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-puzzle-piece text-purple-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Visual Block Programming</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Learn programming concepts using colorful blocks! No typing required - just drag and drop to create amazing programs.</p>
+                        <button class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Start Programming! 🎮
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-robot text-pink-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Robot Adventures</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Control virtual robots and make them move, dance, and solve puzzles! Learn programming logic through fun robot adventures.</p>
+                        <button class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition">
+                            Meet My Robot! 🤖
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-palette text-green-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Creative Digital Art</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Create beautiful digital art using code! Draw patterns, animations, and interactive artwork while learning programming.</p>
+                        <button class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                            Create Art! 🎨
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High School Courses -->
+            <div id="highschool-courses" class="hidden">
+                <h3 class="text-2xl font-bold text-center mb-8 text-blue-600">High School Courses</h3>
+                <div class="feature-grid">
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fab fa-python text-blue-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Python Programming</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Master Python, one of the most powerful programming languages. Build real applications, games, and data analysis tools.</p>
+                        <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            Start Coding Python 🐍
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-mobile-alt text-indigo-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Mobile App Development</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Create your own mobile apps! Learn to build apps for iOS and Android using modern development frameworks.</p>
+                        <button class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">
+                            Build My App! 📱
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-brain text-purple-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">AI & Prompt Engineering</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Learn to work with artificial intelligence, create effective prompts, and understand machine learning concepts.</p>
+                        <button class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Master AI! 🤖
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coding Lab Section -->
+    <section id="coding-lab" class="py-16 bg-gray-100 content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Interactive Coding Labs</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Choose your coding environment based on your learning level
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Visual Block Editor for Primary -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Visual Programming Editor</h3>
+                    <p class="text-gray-600 mb-4">Perfect for Primary School students - drag and drop blocks to create programs!</p>
+                    <div id="blocklyDiv" class="blockly-container mb-4"></div>
+                    <div class="flex gap-4">
+                        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" onclick="runBlocklyCode()">
+                            <i class="fas fa-play mr-2"></i>Run Code
+                        </button>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition" onclick="saveProject()">
+                            <i class="fas fa-save mr-2"></i>Save Project
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Monaco Editor for High School -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Professional Code Editor</h3>
+                    <p class="text-gray-600 mb-4">Advanced editor for High School students with syntax highlighting and IntelliSense!</p>
+                    <div id="monacoEditor" class="monaco-container mb-4"></div>
+                    <div class="flex gap-4">
+                        <button class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition" onclick="runMonacoCode()">
+                            <i class="fas fa-play mr-2"></i>Execute Code
+                        </button>
+                        <button class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition" onclick="formatCode()">
+                            <i class="fas fa-align-left mr-2"></i>Format
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Area -->
+            <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">Output Console</h3>
+                <div id="codeOutput" class="bg-gray-900 text-green-400 p-4 rounded-lg h-32 overflow-auto font-mono text-sm">
+                    > Ready to run your code...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Robotics Section -->
+    <section id="robotics" class="py-16 bg-white content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Robotics Playground</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Program virtual robots and watch them come to life! Learn robotics concepts through fun, interactive challenges.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Robot Programming -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Robot Programming</h3>
+                    <div id="robotBlocklyDiv" class="blockly-container mb-4"></div>
+                    <div class="flex gap-4">
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition" onclick="runRobotCode()">
+                            <i class="fas fa-robot mr-2"></i>Run Robot
+                        </button>
+                        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" onclick="resetRobot()">
+                            <i class="fas fa-redo mr-2"></i>Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Robot Simulator -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Robot Simulator</h3>
+                    <div id="robotSimulator" class="robot-simulator rounded-lg">
+                        <div id="robotAvatar" class="robot-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <p class="text-gray-600">Program your robot to move, turn, and complete challenges!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Robot Challenges -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Robot Challenges</h3>
+                <div class="feature-grid">
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <i class="fas fa-route text-blue-500 text-4xl mb-4"></i>
+                        <h4 class="text-lg font-bold mb-2">Maze Navigator</h4>
+                        <p class="text-gray-600 mb-4">Help your robot navigate through a maze to reach the goal!</p>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition" onclick="loadChallenge('maze')">
+                            Start Challenge
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <i class="fas fa-gem text-purple-500 text-4xl mb-4"></i>
+                        <h4 class="text-lg font-bold mb-2">Treasure Hunter</h4>
+                        <p class="text-gray-600 mb-4">Program your robot to collect all the treasures on the map!</p>
+                        <button class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition" onclick="loadChallenge('treasure')">
+                            Start Challenge
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <i class="fas fa-shapes text-green-500 text-4xl mb-4"></i>
+                        <h4 class="text-lg font-bold mb-2">Pattern Drawer</h4>
+                        <p class="text-gray-600 mb-4">Make your robot draw beautiful patterns and shapes!</p>
+                        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" onclick="loadChallenge('pattern')">
+                            Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Tracking -->
+    <section class="py-16 bg-gray-100 content-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Track Your Progress</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    See how far you've come and celebrate your achievements!
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Progress Circle -->
+                <div class="dashboard-card text-center">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Overall Progress</h3>
+                    <div class="relative w-32 h-32 mx-auto mb-4">
+                        <svg class="w-full h-full progress-ring">
+                            <circle cx="64" cy="64" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                            <circle id="progressCircle" cx="64" cy="64" r="40" stroke="#10b981" stroke-width="8" fill="none" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="progressText" class="text-2xl font-bold text-gray-800">0%</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">Keep going! You're doing great!</p>
+                </div>
+
+                <!-- Achievements -->
+                <div class="dashboard-card">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Recent Achievements</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">First Steps</p>
+                                <p class="text-sm text-gray-600">Completed your first lesson</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center opacity-50">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Code Master</p>
+                                <p class="text-sm text-gray-600">Complete 5 coding exercises</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center opacity-50">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Robot Commander</p>
+                                <p class="text-sm text-gray-600">Complete a robot challenge</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Stats -->
+                <div class="dashboard-card">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Learning Stats</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700">Lessons Completed</span>
+                                <span class="text-sm text-gray-700">2/15</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 13%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700">Projects Created</span>
+                                <span class="text-sm text-gray-700">1/5</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 20%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700">Robot Challenges</span>
+                                <span class="text-sm text-gray-700">0/6</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Join CodewiseHub</h2>
+                <button class="text-gray-500 hover:text-gray-700" onclick="closeModal('authModal')">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex bg-gray-100 rounded-lg p-1">
+                    <button id="loginTab" class="flex-1 py-2 px-4 rounded-md bg-white text-blue-600 font-medium" onclick="showAuthForm('login')">
+                        Sign In
+                    </button>
+                    <button id="registerTab" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:text-blue-600 font-medium" onclick="showAuthForm('register')">
+                        Register
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Registration Form -->
+            <form id="registerForm" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">I am a...</label>
+                    <select id="userRole" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateRegistrationForm()">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="parent">Parent</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="registerName" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="registerEmail" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="registerPassword" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+
+                <!-- Student-specific fields -->
+                <div id="studentFields" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">School Level</label>
+                        <select id="schoolLevel" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="primary">Primary School (Grades R-7)</option>
+                            <option value="highschool">High School (Grades 8-12)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
+                        <select id="studentGrade" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="R">Grade R</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Package</label>
+                        <select id="studentPackage" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="basic">Basic (FREE)</option>
+                            <option value="premium">Premium (R179/month)</option>
+                            <option value="family">Family (R329/month)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Teacher-specific fields -->
+                <div id="teacherFields" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">School Code</label>
+                        <input type="text" id="schoolCode" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your school code">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <input type="text" id="teacherSubject" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Computer Science">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Package</label>
+                        <select id="teacherPackage" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="individual">Individual (R249/month)</option>
+                            <option value="primary">Primary School (R1,499/month)</option>
+                            <option value="highschool">High School (R1,999/month)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Parent-specific fields -->
+                <div id="parentFields" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Child's Account Number</label>
+                        <input type="text" id="childAccountNumber" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., CW-2024-001234">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Package</label>
+                        <select id="parentPackage" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="single">Single Child (R89/month)</option>
+                            <option value="family">Family (R149/month)</option>
+                            <option value="premium">Premium (R249/month)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                    Create Account
+                </button>
+            </form>
+
+            <div id="authMessage" class="mt-4 text-center text-sm"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">CodewiseHub</h3>
+                    <p class="text-gray-400">Empowering the next generation of learners with cutting-edge coding education.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white">Home</a></li>
+                        <li><a href="#courses" class="hover:text-white">Courses</a></li>
+                        <li><a href="#coding-lab" class="hover:text-white">Coding Lab</a></li>
+                        <li><a href="#robotics" class="hover:text-white">Robotics</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 CodewiseHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9Hc-DuH8jXk7X8686A2o2jbvPqVd77no",
+            authDomain: "codewise-hub-production.firebaseapp.com",
+            projectId: "codewise-hub-production",
+            storageBucket: "codewise-hub-production.firebasestorage.app",
+            messagingSenderId: "1067822471514",
+            appId: "1:1067822471514:web:4ac831dede5b3bf49afb63",
+            measurementId: "G-189VFGNKXS"
+        };
+
+        // Global variables
+        let firebaseApp, db, auth, storage;
+        let workspace, robotWorkspace, monacoEditor;
+        let currentUser = null;
+        let userProgress = { lessons: 0, exercises: 0, challenges: 0 };
+        let robotPosition = { x: 50, y: 50 };
+        let robotDirection = 0;
+        let isFirebaseReady = false;
+
+        // Initialize Firebase
+        function initializeFirebase() {
+            try {
+                if (typeof firebase !== 'undefined') {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    auth = firebase.auth();
+                    storage = firebase.storage();
+                    isFirebaseReady = true;
+                    console.log('Firebase initialized successfully');
+                    
+                    // Set up auth state listener
+                    auth.onAuthStateChanged(handleAuthStateChange);
+                } else {
+                    console.error('Firebase not loaded');
+                    showAuthMessage('Firebase not loaded. Please refresh the page.', 'error');
+                }
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                showAuthMessage('Firebase initialization failed: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Firebase first
+            initializeFirebase();
+            
+            // Initialize other components
+            initializeBlockly();
+            initializeRobotBlockly();
+            initializeMonaco();
+            setupEventListeners();
+            loadUserProgress();
+            updateProgressDisplay();
+        });
+
+        // Authentication state handler
+        function handleAuthStateChange(user) {
+            if (user) {
+                currentUser = user;
+                console.log('User signed in:', user.email);
+                loadUserProfile(user.uid);
+                closeModal('authModal');
+                updateAuthButton(user);
+            } else {
+                currentUser = null;
+                console.log('User signed out');
+                updateAuthButton(null);
+            }
+        }
+
+        // Update auth button based on user state
+        function updateAuthButton(user) {
+            const authButton = document.getElementById('auth-button');
+            if (authButton) {
+                if (user) {
+                    authButton.textContent = `Hello, ${user.displayName || user.email}`;
+                    authButton.onclick = () => {
+                        if (auth) {
+                            auth.signOut();
+                        }
+                    };
+                } else {
+                    authButton.textContent = 'Sign In';
+                    authButton.onclick = () => openModal('authModal');
+                }
+            }
+        }
+
+        // Load user profile
+        async function loadUserProfile(userId) {
+            try {
+                if (db) {
+                    const userDoc = await db.collection('users').doc(userId).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        console.log('User profile loaded:', userData);
+                        
+                        // Show age-appropriate content
+                        if (userData.schoolLevel === 'primary') {
+                            showAgeContent('primary');
+                        } else if (userData.schoolLevel === 'highschool') {
+                            showAgeContent('highschool');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    // Mobile menu functionality
+                });
+            }
+
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Auth forms
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegistration);
+            }
+        }
+
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            if (!isFirebaseReady || !auth) {
+                showAuthMessage('Firebase not ready. Please wait and try again.', 'error');
+                return;
+            }
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                showAuthMessage('Login successful!', 'success');
+                console.log('User logged in:', userCredential.user.email);
+            } catch (error) {
+                console.error('Login error:', error);
+                showAuthMessage('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        // Handle registration
+        async function handleRegistration(e) {
+            e.preventDefault();
+            
+            if (!isFirebaseReady || !auth || !db) {
+                showAuthMessage('Firebase not ready. Please wait and try again.', 'error');
+                return;
+            }
+
+            const formData = getRegistrationFormData();
+            
+            try {
+                // Create authentication account
+                const userCredential = await auth.createUserWithEmailAndPassword(formData.email, formData.password);
+                
+                // Generate account number for students
+                if (formData.role === 'student') {
+                    formData.accountNumber = generateAccountNumber();
+                }
+                
+                // Create user profile
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    role: formData.role,
+                    email: formData.email,
+                    displayName: formData.name,
+                    schoolLevel: formData.schoolLevel,
+                    grade: formData.grade,
+                    package: formData.package,
+                    accountNumber: formData.accountNumber,
+                    schoolCode: formData.schoolCode,
+                    subject: formData.subject,
+                    childAccountNumber: formData.childAccountNumber,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showAuthMessage('Registration successful!', 'success');
+                
+                // Handle parent-child linking
+                if (formData.role === 'parent' && formData.childAccountNumber) {
+                    await linkParentToChild(userCredential.user.uid, formData.childAccountNumber);
+                }
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAuthMessage('Registration failed: ' + error.message, 'error');
+            }
+        }
+
+        // Get registration form data
+        function getRegistrationFormData() {
+            const role = document.getElementById('userRole').value;
+            const data = {
+                role: role,
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value
+            };
+            
+            if (role === 'student') {
+                data.schoolLevel = document.getElementById('schoolLevel').value;
+                data.grade = document.getElementById('studentGrade').value;
+                data.package = document.getElementById('studentPackage').value;
+            } else if (role === 'teacher') {
+                data.schoolCode = document.getElementById('schoolCode').value;
+                data.subject = document.getElementById('teacherSubject').value;
+                data.package = document.getElementById('teacherPackage').value;
+            } else if (role === 'parent') {
+                data.childAccountNumber = document.getElementById('childAccountNumber').value;
+                data.package = document.getElementById('parentPackage').value;
+            }
+            
+            return data;
+        }
+
+        // Generate account number
+        function generateAccountNumber() {
+            const year = new Date().getFullYear();
+            const random = Math.floor(Math.random() * 900000) + 100000;
+            return `CW-${year}-${random}`;
+        }
+
+        // Link parent to child
+        async function linkParentToChild(parentId, childAccountNumber) {
+            try {
+                if (db) {
+                    // Find child by account number
+                    const childQuery = await db.collection('users')
+                        .where('accountNumber', '==', childAccountNumber)
+                        .get();
+                    
+                    if (!childQuery.empty) {
+                        const childDoc = childQuery.docs[0];
+                        const childId = childDoc.id;
+                        
+                        // Update parent document
+                        await db.collection('users').doc(parentId).update({
+                            children: firebase.firestore.FieldValue.arrayUnion(childId)
+                        });
+                        
+                        // Update child document
+                        await db.collection('users').doc(childId).update({
+                            parents: firebase.firestore.FieldValue.arrayUnion(parentId)
+                        });
+                        
+                        console.log('Parent-child linking successful');
+                    }
+                }
+            } catch (error) {
+                console.error('Error linking parent to child:', error);
+            }
+        }
+
+        // Show authentication message
+        function showAuthMessage(message, type) {
+            const messageDiv = document.getElementById('authMessage');
+            if (messageDiv) {
+                messageDiv.textContent = message;
+                messageDiv.className = `mt-4 text-center text-sm ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+            }
+        }
+
+        // Update registration form based on role
+        function updateRegistrationForm() {
+            const role = document.getElementById('userRole').value;
+            const studentFields = document.getElementById('studentFields');
+            const teacherFields = document.getElementById('teacherFields');
+            const parentFields = document.getElementById('parentFields');
+            
+            // Hide all fields
+            studentFields.classList.add('hidden');
+            teacherFields.classList.add('hidden');
+            parentFields.classList.add('hidden');
+            
+            // Show relevant fields
+            if (role === 'student') {
+                studentFields.classList.remove('hidden');
+            } else if (role === 'teacher') {
+                teacherFields.classList.remove('hidden');
+            } else if (role === 'parent') {
+                parentFields.classList.remove('hidden');
+            }
+        }
+
+        // Show authentication form
+        function showAuthForm(type) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTab.className = 'flex-1 py-2 px-4 rounded-md bg-white text-blue-600 font-medium';
+                registerTab.className = 'flex-1 py-2 px-4 rounded-md text-gray-600 hover:text-blue-600 font-medium';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                loginTab.className = 'flex-1 py-2 px-4 rounded-md text-gray-600 hover:text-blue-600 font-medium';
+                registerTab.className = 'flex-1 py-2 px-4 rounded-md bg-white text-blue-600 font-medium';
+            }
+        }
+
+        // Initialize Blockly workspace
+        function initializeBlockly() {
+            if (typeof Blockly !== 'undefined') {
+                workspace = Blockly.inject('blocklyDiv', {
+                    toolbox: `
+                    <xml>
+                        <category name="Logic" colour="210">
+                            <block type="controls_if"></block>
+                            <block type="logic_compare"></block>
+                            <block type="logic_operation"></block>
+                            <block type="logic_boolean"></block>
+                        </category>
+                        <category name="Loops" colour="120">
+                            <block type="controls_repeat_ext"></block>
+                            <block type="controls_for"></block>
+                        </category>
+                        <category name="Math" colour="230">
+                            <block type="math_number"></block>
+                            <block type="math_arithmetic"></block>
+                        </category>
+                        <category name="Text" colour="160">
+                            <block type="text"></block>
+                            <block type="text_print"></block>
+                        </category>
+                        <category name="Variables" colour="330">
+                            <block type="variables_set"></block>
+                            <block type="variables_get"></block>
+                        </category>
+                    </xml>
+                    `,
+                    grid: {
+                        spacing: 20,
+                        length: 3,
+                        colour: '#ccc',
+                        snap: true
+                    },
+                    zoom: {
+                        controls: true,
+                        wheel: true,
+                        startScale: 1.0,
+                        maxScale: 3,
+                        minScale: 0.3,
+                        scaleSpeed: 1.2
+                    }
+                });
+            }
+        }
+
+        // Initialize Robot Blockly workspace
+        function initializeRobotBlockly() {
+            if (typeof Blockly !== 'undefined') {
+                robotWorkspace = Blockly.inject('robotBlocklyDiv', {
+                    toolbox: `
+                    <xml>
+                        <category name="Movement" colour="120">
+                            <block type="robot_move_forward"></block>
+                            <block type="robot_turn_left"></block>
+                            <block type="robot_turn_right"></block>
+                        </category>
+                        <category name="Control" colour="290">
+                            <block type="controls_repeat_ext"></block>
+                            <block type="controls_if"></block>
+                        </category>
+                    </xml>
+                    `,
+                    grid: {
+                        spacing: 20,
+                        length: 3,
+                        colour: '#ccc',
+                        snap: true
+                    },
+                    zoom: {
+                        controls: true,
+                        wheel: true,
+                        startScale: 1.0,
+                        maxScale: 3,
+                        minScale: 0.3,
+                        scaleSpeed: 1.2
+                    }
+                });
+                
+                defineRobotBlocks();
+            }
+        }
+
+        // Define custom robot blocks
+        function defineRobotBlocks() {
+            if (typeof Blockly !== 'undefined') {
+                Blockly.Blocks['robot_move_forward'] = {
+                    init: function() {
+                        this.appendDummyInput()
+                            .appendField("🤖 Move Forward");
+                        this.setPreviousStatement(true, null);
+                        this.setNextStatement(true, null);
+                        this.setColour(120);
+                        this.setTooltip("Move the robot forward one step");
+                    }
+                };
+
+                Blockly.Blocks['robot_turn_left'] = {
+                    init: function() {
+                        this.appendDummyInput()
+                            .appendField("🤖 Turn Left");
+                        this.setPreviousStatement(true, null);
+                        this.setNextStatement(true, null);
+                        this.setColour(120);
+                        this.setTooltip("Turn the robot left");
+                    }
+                };
+
+                Blockly.Blocks['robot_turn_right'] = {
+                    init: function() {
+                        this.appendDummyInput()
+                            .appendField("🤖 Turn Right");
+                        this.setPreviousStatement(true, null);
+                        this.setNextStatement(true, null);
+                        this.setColour(120);
+                        this.setTooltip("Turn the robot right");
+                    }
+                };
+
+                // JavaScript generators
+                Blockly.JavaScript['robot_move_forward'] = function(block) {
+                    return 'moveRobotForward();\n';
+                };
+
+                Blockly.JavaScript['robot_turn_left'] = function(block) {
+                    return 'turnRobotLeft();\n';
+                };
+
+                Blockly.JavaScript['robot_turn_right'] = function(block) {
+                    return 'turnRobotRight();\n';
+                };
+            }
+        }
+
+        // Initialize Monaco Editor
+        function initializeMonaco() {
+            if (typeof require !== 'undefined') {
+                require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' }});
+                require(['vs/editor/editor.main'], function() {
+                    monacoEditor = monaco.editor.create(document.getElementById('monacoEditor'), {
+                        value: `// Welcome to CodewiseHub Monaco Editor!
+// This is a professional coding environment
+
+function greetUser(name) {
+    console.log("Hello, " + name + "!");
+    console.log("Welcome to CodewiseHub!");
+}
+
+// Call the function
+greetUser("Developer");
+
+// Try some basic JavaScript
+let numbers = [1, 2, 3, 4, 5];
+let doubled = numbers.map(x => x * 2);
+console.log("Doubled numbers:", doubled);`,
+                        language: 'javascript',
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        wordWrap: 'on'
+                    });
+                });
+            }
+        }
+
+        // Run Blockly code
+        function runBlocklyCode() {
+            if (workspace) {
+                const code = Blockly.JavaScript.workspaceToCode(workspace);
+                executeCode(code);
+            }
+        }
+
+        // Run Monaco code
+        function runMonacoCode() {
+            if (monacoEditor) {
+                const code = monacoEditor.getValue();
+                executeCode(code);
+            }
+        }
+
+        // Execute code
+        function executeCode(code) {
+            const output = document.getElementById('codeOutput');
+            output.innerHTML = '';
+            
+            try {
+                // Redirect console.log to output
+                const originalConsoleLog = console.log;
+                console.log = function(...args) {
+                    output.innerHTML += '> ' + args.join(' ') + '\n';
+                    originalConsoleLog.apply(console, args);
+                };
+                
+                // Execute code
+                eval(code);
+                
+                // Restore console.log
+                console.log = originalConsoleLog;
+                
+                if (output.innerHTML === '') {
+                    output.innerHTML = '> Code executed successfully!';
+                }
+            } catch (error) {
+                output.innerHTML = `> Error: ${error.message}`;
+            }
+        }
+
+        // Format code in Monaco
+        function formatCode() {
+            if (monacoEditor) {
+                monacoEditor.getAction('editor.action.formatDocument').run();
+            }
+        }
+
+        // Robot movement functions
+        function moveRobotForward() {
+            const robot = document.getElementById('robotAvatar');
+            const step = 40;
+            
+            switch(robotDirection) {
+                case 0: // Right
+                    robotPosition.x = Math.min(robotPosition.x + step, 90);
+                    break;
+                case 90: // Down
+                    robotPosition.y = Math.min(robotPosition.y + step, 90);
+                    break;
+                case 180: // Left
+                    robotPosition.x = Math.max(robotPosition.x - step, 10);
+                    break;
+                case 270: // Up
+                    robotPosition.y = Math.max(robotPosition.y - step, 10);
+                    break;
+            }
+            
+            robot.style.left = robotPosition.x + '%';
+            robot.style.top = robotPosition.y + '%';
+            robot.style.transform = `translate(-50%, -50%) rotate(${robotDirection}deg)`;
+        }
+
+        function turnRobotLeft() {
+            robotDirection = (robotDirection + 270) % 360;
+            updateRobotRotation();
+        }
+
+        function turnRobotRight() {
+            robotDirection = (robotDirection + 90) % 360;
+            updateRobotRotation();
+        }
+
+        function updateRobotRotation() {
+            const robot = document.getElementById('robotAvatar');
+            robot.style.transform = `translate(-50%, -50%) rotate(${robotDirection}deg)`;
+        }
+
+        // Run robot code
+        function runRobotCode() {
+            if (robotWorkspace) {
+                const code = Blockly.JavaScript.workspaceToCode(robotWorkspace);
+                try {
+                    eval(code);
+                    updateProgress('challenges');
+                } catch (error) {
+                    console.error('Robot code error:', error);
+                }
+            }
+        }
+
+        // Reset robot
+        function resetRobot() {
+            robotPosition = { x: 50, y: 50 };
+            robotDirection = 0;
+            const robot = document.getElementById('robotAvatar');
+            robot.style.left = '50%';
+            robot.style.top = '50%';
+            robot.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+        }
+
+        // Load robot challenge
+        function loadChallenge(challengeType) {
+            resetRobot();
+            
+            const challenges = {
+                maze: "Navigate through the maze to reach the goal! Use forward, left, and right commands.",
+                treasure: "Collect all the treasure items by moving to their locations!",
+                pattern: "Draw a square pattern by moving forward and turning right!"
+            };
+            
+            alert(`Challenge: ${challenges[challengeType]}`);
+            updateProgress('challenges');
+        }
+
+        // Show age-specific content
+        function showAgeContent(age) {
+            const primaryCourses = document.getElementById('primary-courses');
+            const highschoolCourses = document.getElementById('highschool-courses');
+            
+            if (age === 'primary') {
+                primaryCourses.classList.remove('hidden');
+                highschoolCourses.classList.add('hidden');
+            } else if (age === 'highschool') {
+                primaryCourses.classList.add('hidden');
+                highschoolCourses.classList.remove('hidden');
+            }
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Utility functions
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function saveProject() {
+            if (workspace && currentUser) {
+                const code = Blockly.JavaScript.workspaceToCode(workspace);
+                // Save to Firebase
+                console.log('Saving project...');
+                updateProgress('exercises');
+            }
+        }
+
+        // Progress tracking
+        function updateProgress(type) {
+            userProgress[type]++;
+            saveUserProgress();
+            updateProgressDisplay();
+        }
+
+        function updateProgressDisplay() {
+            const totalProgress = userProgress.lessons + userProgress.exercises + userProgress.challenges;
+            const maxProgress = 31;
+            const percentage = Math.min((totalProgress / maxProgress) * 100, 100);
+            
+            const progressText = document.getElementById('progressText');
+            const progressCircle = document.getElementById('progressCircle');
+            
+            if (progressText) {
+                progressText.textContent = Math.round(percentage) + '%';
+            }
+            
+            if (progressCircle) {
+                const circumference = 2 * Math.PI * 40;
+                const offset = circumference - (percentage / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+        }
+
+        function loadUserProgress() {
+            const saved = localStorage.getItem('codewise-progress');
+            if (saved) {
+                userProgress = JSON.parse(saved);
+                updateProgressDisplay();
+            }
+        }
+
+        function saveUserProgress() {
+            localStorage.setItem('codewise-progress', JSON.stringify(userProgress));
+        }
+
+        // Initialize progress on page load
+        window.addEventListener('load', function() {
+            updateProgressDisplay();
+        });
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgow%2FL5KclZiY97LN%2B3BoXdn55rat%2FhwQA%2FJUDT7iatKaF5gqXrjP7RYDeyEfIGWtmju4ot6EXxKliwZYVFOq3pNP%2BwggkDC1wKrhr6ximHoKTeZDmE2tZwP7V3dwkVPTrofbMx34Qwc6QEClpuKVIKf%2Fdz0gACfKeSFGGB5TR3tuIBwsZva9%2FWNFxYZ71XlavqcvRbjF8WxTXY%2FouyUyWbQ1h6bV76583NqKUnfoxp%2FN5Cp0Kw9CSuKYJz03GZgDATc4MJYGBbtDLEhPpDLpW5ro7KJKzB6DdiUzkuZZuGtKjUMJeXs38Cd4JCgOscUVkxWfJHQ0DVU%2B%2FIS6OhZTNB5CiC5BY%2FfLBpQQhQ9zIr5W8ebxM6G4vvaCWeI1hWOkmAp%2FmErR7LAgXfx%2FrVohkqwtR50g5yFTgmPt22oRl7ur2JWdasRtxcdURLUBZvKwY8bk6L%2FGRFb7%2FndueoL3ejI9jHW3xS3B%2BPn995R3rnPCrzS1vyNEytJQGxJbhswlw%3D%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgow/L5KclZiY97LN+3BoXdn55rat/hwQA/JUDT7iatKaF5gqXrjP7RYDeyEfIGWtmju4ot6EXxKliwZYVFOq3pNP+wggkDC1wKrhr6ximHoKTeZDmE2tZwP7V3dwkVPTrofbMx34Qwc6QEClpuKVIKf/dz0gACfKeSFGGB5TR3tuIBwsZva9/WNFxYZ71XlavqcvRbjF8WxTXY/ouyUyWbQ1h6bV76583NqKUnfoxp/N5Cp0Kw9CSuKYJz03GZgDATc4MJYGBbtDLEhPpDLpW5ro7KJKzB6DdiUzkuZZuGtKjUMJeXs38Cd4JCgOscUVkxWfJHQ0DVU+/IS6OhZTNB5CiC5BY/fLBpQQhQ9zIr5W8ebxM6G4vvaCWeI1hWOkmAp/mErR7LAgXfx/rVohkqwtR50g5yFTgmPt22oRl7ur2JWdasRtxcdURLUBZvKwY8bk6L/GRFb7/ndueoL3ejI9jHW3xS3B+Pn995R3rnPCrzS1vyNEytJQGxJbhswlw==";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

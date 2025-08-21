@@ -1,0 +1,48 @@
+[15:57:27.258] Running build in Washington, D.C., USA (East) – iad1
+[15:57:27.259] Build machine configuration: 2 cores, 8 GB
+[15:57:27.302] Cloning github.com/codewise-hub/codewise-hub (Branch: main, Commit: 96aee1a)
+[15:57:27.423] Previous build caches not available
+[15:57:27.605] Cloning completed: 303.000ms
+[15:57:27.630] Found .vercelignore
+[15:57:27.640] Removed 43 ignored files defined in .vercelignore
+[15:57:27.640]   /.git/config
+[15:57:27.640]   /.git/description
+[15:57:27.640]   /.git/FETCH_HEAD
+[15:57:27.640]   /.git/HEAD
+[15:57:27.640]   /.git/hooks/applypatch-msg.sample
+[15:57:27.640]   /.git/hooks/commit-msg.sample
+[15:57:27.640]   /.git/hooks/fsmonitor-watchman.sample
+[15:57:27.640]   /.git/hooks/post-update.sample
+[15:57:27.640]   /.git/hooks/pre-applypatch.sample
+[15:57:27.640]   /.git/hooks/pre-commit.sample
+[15:57:30.018] Running "vercel build"
+[15:57:30.462] Vercel CLI 44.7.2
+[15:57:30.628] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[15:57:31.028] Installing dependencies...
+[15:57:35.562] npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+[15:57:36.584] npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+[15:57:36.616] npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+[15:57:47.054] 
+[15:57:47.055] added 630 packages in 16s
+[15:57:47.055] 
+[15:57:47.055] 72 packages are looking for funding
+[15:57:47.056]   run `npm fund` for details
+[15:57:47.101] Running "npm run vercel-build"
+[15:57:47.210] 
+[15:57:47.210] > rest-express@1.0.0 vercel-build
+[15:57:47.211] > npm run build
+[15:57:47.211] 
+[15:57:47.330] 
+[15:57:47.332] > rest-express@1.0.0 build
+[15:57:47.332] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[15:57:47.332] 
+[15:57:47.603] [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+[15:57:47.633] [32m✓[39m 0 modules transformed.
+[15:57:47.635] [31mx[39m Build failed in 9ms
+[15:57:47.635] [31merror during build:
+[15:57:47.636] [31mCould not resolve entry module "client/index.html".[31m
+[15:57:47.636]     at getRollupError (file:///vercel/path0/node_modules/rollup/dist/es/shared/parseAst.js:396:41)
+[15:57:47.636]     at error (file:///vercel/path0/node_modules/rollup/dist/es/shared/parseAst.js:392:42)
+[15:57:47.636]     at ModuleLoader.loadEntryModule (file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:20086:20)
+[15:57:47.636]     at async Promise.all (index 0)[39m
+[15:57:47.656] Error: Command "npm run vercel-build" exited with 1

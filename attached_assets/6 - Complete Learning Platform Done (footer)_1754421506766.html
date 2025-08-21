@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodewiseHub - Complete Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .kid-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .teen-gradient {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .blockly-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .monaco-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .robot-simulator {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-avatar {
+            width: 40px;
+            height: 40px;
+            background: #4299e1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: all 0.5s ease;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .simple-block {
+            background: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            user-select: none;
+        }
+        
+        .simple-block:hover {
+            background: #3182ce;
+            transform: scale(1.05);
+        }
+        
+        .simple-block.selected {
+            background: #2d3748;
+            transform: scale(1.1);
+        }
+        
+        .visual-workspace {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 300px;
+            padding: 16px;
+            position: relative;
+        }
+        
+        .robot-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .robot-control-btn {
+            background: #48bb78;
+            color: white;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .robot-control-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            background: #edf2f7;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-left: 16px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .age-content {
+            display: none;
+        }
+        
+        .age-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-800">CodewiseHub</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="hidden md:flex items-center space-x-4">
+                        <a href="#home" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Home</a>
+                        <a href="#courses" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Courses</a>
+                        <a href="#coding-lab" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Coding Lab</a>
+                        <a href="#robotics" class="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Robotics</a>
+                    </div>
+                    <div id="user-info" class="user-info hidden">
+                        <span id="username-display" class="text-sm font-medium text-gray-700"></span>
+                        <span id="usercode-display" class="text-xs text-gray-500 ml-2"></span>
+                        <button onclick="logout()" class="ml-4 text-xs text-red-600 hover:text-red-800">Logout</button>
+                    </div>
+                    <button id="login-btn" onclick="showLoginModal()" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Sign In</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Sign In to CodewiseHub</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="login-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-between">
+                    <button type="button" onclick="hideLoginModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Sign In</button>
+                </div>
+            </form>
+            <div id="login-error" class="mt-4 text-red-600 text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                    Explore. Learn. Code.
+                    <span class="block text-yellow-300">Together!</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+                    Interactive coding adventures designed for young minds. 
+                    Build amazing projects, learn with AI, and become a coding hero!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="showLoginModal()" class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition bounce-animation">
+                        <i class="fas fa-rocket mr-2"></i>Start Learning Now
+                    </button>
+                    <button class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        <i class="fas fa-play mr-2"></i>Watch Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Overview -->
+    <section id="courses" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Courses</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Comprehensive programming courses designed for different age groups and skill levels
+                </p>
+            </div>
+
+            <!-- Course Categories -->
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+                <div class="kid-gradient p-8 rounded-2xl shadow-lg text-center">
+                    <div class="text-6xl mb-4">🧒</div>
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4">Little Coders</h3>
+                    <p class="text-purple-700 mb-4">Ages 6-11</p>
+                    <div class="text-sm text-purple-600 mb-6">
+                        <i class="fas fa-puzzle-piece mr-2"></i>Visual Programming<br>
+                        <i class="fas fa-robot mr-2"></i>Simple Robotics<br>
+                        <i class="fas fa-gamepad mr-2"></i>Fun Games & Activities
+                    </div>
+                    <p class="text-sm text-purple-600">Sign in to access age-appropriate learning paths</p>
+                </div>
+
+                <div class="teen-gradient p-8 rounded-2xl shadow-lg text-center">
+                    <div class="text-6xl mb-4">🧑‍💻</div>
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Teen Developers</h3>
+                    <p class="text-blue-700 mb-4">Ages 12-18</p>
+                    <div class="text-sm text-blue-600 mb-6">
+                        <i class="fas fa-code mr-2"></i>Professional Programming<br>
+                        <i class="fas fa-laptop-code mr-2"></i>Advanced Projects<br>
+                        <i class="fas fa-brain mr-2"></i>AI & Prompt Engineering
+                    </div>
+                    <p class="text-sm text-blue-600">Sign in to access advanced programming courses</p>
+                </div>
+            </div>
+
+            <!-- Available Course Topics -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-globe text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Web Development</h3>
+                        <p class="text-gray-600 mb-4">Learn HTML, CSS, and JavaScript to build interactive websites</p>
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-users mr-1"></i>Both age groups
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Robotics</h3>
+                        <p class="text-gray-600 mb-4">Program robots and learn computational thinking</p>
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-users mr-1"></i>Both age groups
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">AI & Prompt Engineering</h3>
+                        <p class="text-gray-600 mb-4">Learn to interact with AI systems effectively</p>
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-user-graduate mr-1"></i>Teen Developers only
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Age-Specific Learning Paths (Hidden until login) -->
+    <section id="learning-paths" class="py-16 bg-gray-100 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Your Learning Path</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Personalized courses based on your age and skill level
+                </p>
+            </div>
+
+            <!-- Little Coders Learning Path -->
+            <div id="little-coders-path" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-purple-600">Little Coders Journey</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-puzzle-piece text-purple-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Visual Programming</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Learn programming with colorful blocks and simple drag-and-drop</p>
+                        <button onclick="openCodingLab()" class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Start Coding! 🎮
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-robot text-pink-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Simple Robotics</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Control friendly robots with easy commands and fun challenges</p>
+                        <button onclick="openRobotics()" class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition">
+                            Play with Robots! 🤖
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teen Developers Learning Path -->
+            <div id="teen-developers-path" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-blue-600">Teen Developers Track</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-code text-blue-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Web Development</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Build professional websites with HTML, CSS, and JavaScript</p>
+                        <button onclick="openCodingLab()" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            Start Coding 💻
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fab fa-python text-green-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">Python Programming</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Learn Python for data science, automation, and more</p>
+                        <button onclick="openCodingLab()" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                            Code Python 🐍
+                        </button>
+                    </div>
+                    <div class="course-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-brain text-purple-500 text-4xl mb-2"></i>
+                            <h4 class="text-lg font-bold">AI & Prompt Engineering</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Master AI interaction and prompt engineering techniques</p>
+                        <button onclick="openCodingLab()" class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition">
+                            Learn AI 🤖
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coding Lab Section -->
+    <section id="coding-lab" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Interactive Coding Lab</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Practice coding with age-appropriate programming environments
+                </p>
+            </div>
+
+            <!-- Little Coders Coding Lab -->
+            <div id="little-coders-lab" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-purple-600">Simple Visual Programming</h3>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Drag & Drop Blocks</h4>
+                        <div class="mb-4">
+                            <div class="simple-block" onclick="addBlock('move')">🏃 Move Forward</div>
+                            <div class="simple-block" onclick="addBlock('turn')">🔄 Turn Right</div>
+                            <div class="simple-block" onclick="addBlock('jump')">🦘 Jump</div>
+                            <div class="simple-block" onclick="addBlock('dance')">💃 Dance</div>
+                        </div>
+                        <div class="visual-workspace" id="visual-workspace">
+                            <p class="text-gray-500 text-center">Drag blocks here to build your program!</p>
+                        </div>
+                        <div class="flex gap-4 mt-4">
+                            <button onclick="runVisualProgram()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                                ▶️ Run Program
+                            </button>
+                            <button onclick="clearVisualProgram()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                                🗑️ Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Character Animation</h4>
+                        <div class="bg-white rounded-lg p-4 h-64 flex items-center justify-center border-2 border-gray-200">
+                            <div id="character" class="text-6xl transition-all duration-500">🐱</div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-gray-600">Your character will move here when you run your program!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teen Developers Coding Lab -->
+            <div id="teen-developers-lab" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-blue-600">Professional Code Editor</h3>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Monaco Editor</h4>
+                        <div class="mb-4">
+                            <select id="language-select" class="px-3 py-2 border rounded-lg mr-4">
+                                <option value="javascript">JavaScript</option>
+                                <option value="python">Python</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                            </select>
+                            <button onclick="runCode()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                                ▶️ Run Code
+                            </button>
+                        </div>
+                        <div id="monaco-editor" class="monaco-container"></div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Output</h4>
+                        <div id="code-output" class="bg-white rounded-lg p-4 h-64 overflow-auto border-2 border-gray-200">
+                            <p class="text-gray-500">Your code output will appear here...</p>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="clearOutput()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                🗑️ Clear Output
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Robotics Section -->
+    <section id="robotics" class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Robotics Playground</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Program virtual robots with age-appropriate interfaces
+                </p>
+            </div>
+
+            <!-- Little Coders Robotics -->
+            <div id="little-coders-robotics" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-purple-600">Simple Robot Control</h3>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Robot Commands</h4>
+                        <div class="robot-controls">
+                            <button class="robot-control-btn" onclick="robotCommand('forward')">⬆️ Forward</button>
+                            <button class="robot-control-btn" onclick="robotCommand('backward')">⬇️ Backward</button>
+                            <button class="robot-control-btn" onclick="robotCommand('left')">⬅️ Left</button>
+                            <button class="robot-control-btn" onclick="robotCommand('right')">➡️ Right</button>
+                            <button class="robot-control-btn" onclick="robotCommand('dance')">💃 Dance</button>
+                            <button class="robot-control-btn" onclick="robotCommand('reset')">🔄 Reset</button>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-gray-600 text-sm">Click buttons to control your robot!</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Robot World</h4>
+                        <div class="robot-simulator rounded-lg">
+                            <div id="simple-robot" class="robot-avatar">
+                                🤖
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-gray-600">Watch your robot move in this simple world!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teen Developers Robotics -->
+            <div id="teen-developers-robotics" class="age-content">
+                <h3 class="text-2xl font-bold text-center mb-8 text-blue-600">Advanced Robot Programming</h3>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Robot Programming</h4>
+                        <div id="robot-blockly" class="blockly-container mb-4"></div>
+                        <div class="flex gap-4">
+                            <button onclick="runRobotProgram()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                🤖 Run Robot
+                            </button>
+                            <button onclick="resetRobotProgram()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                🔄 Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Robot Simulator</h4>
+                        <div class="robot-simulator rounded-lg" style="height: 300px;">
+                            <div id="advanced-robot" class="robot-avatar">
+                                🤖
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-gray-600">Program your robot to navigate and complete challenges!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">CodewiseHub</h3>
+                    <p class="text-gray-400">Empowering young minds with coding education tailored to their age and skill level.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Courses</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Little Coders (Ages 6-11)</li>
+                        <li>Teen Developers (Ages 12-18)</li>
+                        <li>Visual Programming</li>
+                        <li>Professional Coding</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Features</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Interactive Coding Lab</li>
+                        <li>Robotics Playground</li>
+                        <li>Age-Appropriate Content</li>
+                        <li>Progress Tracking</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Help Center</li>
+                        <li>Contact Us</li>
+                        <li>Privacy Policy</li>
+                        <li>Terms of Service</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 CodewiseHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9Hc-DuH8jXk7X8686A2o2jbvPqVd77no",
+            authDomain: "codewise-hub-production.firebaseapp.com",
+            projectId: "codewise-hub-production",
+            storageBucket: "codewise-hub-production.firebasestorage.app",
+            messagingSenderId: "1067822471514",
+            appId: "1:1067822471514:web:4ac831dede5b3bf49afb63",
+            measurementId: "G-189VFGNKXS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Global variables
+        let currentUser = null;
+        let monacoEditor = null;
+        let robotWorkspace = null;
+        let visualBlocks = [];
+        let robotPosition = { x: 50, y: 50 };
+        let robotDirection = 0;
+
+        // Authentication
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                showUserInterface();
+                loadUserProfile();
+            } else {
+                currentUser = null;
+                showGuestInterface();
+            }
+        });
+
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function hideLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                hideLoginModal();
+                errorDiv.classList.add('hidden');
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        async function logout() {
+            await auth.signOut();
+        }
+
+        function showUserInterface() {
+            document.getElementById('login-btn').classList.add('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('learning-paths').classList.remove('hidden');
+        }
+
+        function showGuestInterface() {
+            document.getElementById('login-btn').classList.remove('hidden');
+            document.getElementById('user-info').classList.add('hidden');
+            document.getElementById('learning-paths').classList.add('hidden');
+            hideAllAgeContent();
+        }
+
+        async function loadUserProfile() {
+            if (!currentUser) return;
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    document.getElementById('username-display').textContent = userData.displayName || 'User';
+                    document.getElementById('usercode-display').textContent = userData.accountNumber || 'No Code';
+                    
+                    // Show age-appropriate content
+                    showAgeContent(userData.ageGroup);
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        function showAgeContent(ageGroup) {
+            hideAllAgeContent();
+            
+            if (ageGroup === 'kids') {
+                document.getElementById('little-coders-path').classList.add('active');
+                document.getElementById('little-coders-lab').classList.add('active');
+                document.getElementById('little-coders-robotics').classList.add('active');
+            } else if (ageGroup === 'teens') {
+                document.getElementById('teen-developers-path').classList.add('active');
+                document.getElementById('teen-developers-lab').classList.add('active');
+                document.getElementById('teen-developers-robotics').classList.add('active');
+                initializeMonacoEditor();
+                initializeRobotBlockly();
+            }
+        }
+
+        function hideAllAgeContent() {
+            document.querySelectorAll('.age-content').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+
+        function openCodingLab() {
+            document.getElementById('coding-lab').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openRobotics() {
+            document.getElementById('robotics').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Visual Programming for Little Coders
+        function addBlock(type) {
+            const workspace = document.getElementById('visual-workspace');
+            const block = document.createElement('div');
+            block.className = 'simple-block';
+            block.style.display = 'block';
+            block.style.margin = '4px 0';
+            
+            const blockText = {
+                'move': '🏃 Move Forward',
+                'turn': '🔄 Turn Right',
+                'jump': '🦘 Jump',
+                'dance': '💃 Dance'
+            };
+            
+            block.textContent = blockText[type];
+            block.onclick = () => block.remove();
+            
+            if (workspace.querySelector('p')) {
+                workspace.innerHTML = '';
+            }
+            
+            workspace.appendChild(block);
+            visualBlocks.push(type);
+        }
+
+        function runVisualProgram() {
+            const character = document.getElementById('character');
+            let delay = 0;
+            
+            visualBlocks.forEach((block, index) => {
+                setTimeout(() => {
+                    switch(block) {
+                        case 'move':
+                            character.style.transform = `translateX(${(index + 1) * 50}px)`;
+                            break;
+                        case 'turn':
+                            character.style.transform += ` rotate(${(index + 1) * 90}deg)`;
+                            break;
+                        case 'jump':
+                            character.style.transform += ` translateY(-20px)`;
+                            setTimeout(() => {
+                                character.style.transform = character.style.transform.replace('translateY(-20px)', '');
+                            }, 300);
+                            break;
+                        case 'dance':
+                            character.style.transform += ` scale(1.5)`;
+                            setTimeout(() => {
+                                character.style.transform = character.style.transform.replace('scale(1.5)', '');
+                            }, 500);
+                            break;
+                    }
+                }, delay);
+                delay += 800;
+            });
+        }
+
+        function clearVisualProgram() {
+            const workspace = document.getElementById('visual-workspace');
+            workspace.innerHTML = '<p class="text-gray-500 text-center">Drag blocks here to build your program!</p>';
+            visualBlocks = [];
+            document.getElementById('character').style.transform = '';
+        }
+
+        // Monaco Editor for Teen Developers
+        function initializeMonacoEditor() {
+            require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' } });
+            require(['vs/editor/editor.main'], function () {
+                monacoEditor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                    value: '// Welcome to CodewiseHub!\n// Start coding here...\n\nconsole.log("Hello, World!");',
+                    language: 'javascript',
+                    theme: 'vs-light',
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    wordWrap: 'on'
+                });
+                
+                // Listen for language changes
+                document.getElementById('language-select').addEventListener('change', (e) => {
+                    const language = e.target.value;
+                    monaco.editor.setModelLanguage(monacoEditor.getModel(), language);
+                    
+                    // Set appropriate starter code
+                    const starterCode = {
+                        'javascript': '// JavaScript Code\nconsole.log("Hello, JavaScript!");',
+                        'python': '# Python Code\nprint("Hello, Python!")',
+                        'html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>My Page</title>\n</head>\n<body>\n    <h1>Hello, HTML!</h1>\n</body>\n</html>',
+                        'css': '/* CSS Code */\nbody {\n    font-family: Arial, sans-serif;\n    color: #333;\n}'
+                    };
+                    
+                    monacoEditor.setValue(starterCode[language]);
+                });
+            });
+        }
+
+        function runCode() {
+            if (!monacoEditor) return;
+            
+            const code = monacoEditor.getValue();
+            const language = document.getElementById('language-select').value;
+            const output = document.getElementById('code-output');
+            
+            try {
+                if (language === 'javascript') {
+                    const originalConsoleLog = console.log;
+                    let outputText = '';
+                    
+                    console.log = function(...args) {
+                        outputText += args.join(' ') + '\n';
+                    };
+                    
+                    eval(code);
+                    console.log = originalConsoleLog;
+                    
+                    output.innerHTML = outputText || 'Code executed successfully!';
+                } else if (language === 'html') {
+                    output.innerHTML = `<iframe srcdoc="${code}" style="width:100%;height:200px;border:1px solid #ccc;"></iframe>`;
+                } else {
+                    output.innerHTML = `<pre>${code}</pre><p class="text-blue-600 mt-2">✓ Code saved successfully!</p>`;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('code-output').innerHTML = '<p class="text-gray-500">Your code output will appear here...</p>';
+        }
+
+        // Simple Robot Control for Little Coders
+        function robotCommand(command) {
+            const robot = document.getElementById('simple-robot');
+            
+            switch(command) {
+                case 'forward':
+                    robotPosition.y = Math.max(robotPosition.y - 10, 5);
+                    break;
+                case 'backward':
+                    robotPosition.y = Math.min(robotPosition.y + 10, 95);
+                    break;
+                case 'left':
+                    robotPosition.x = Math.max(robotPosition.x - 10, 5);
+                    break;
+                case 'right':
+                    robotPosition.x = Math.min(robotPosition.x + 10, 95);
+                    break;
+                case 'dance':
+                    robot.style.transform = 'translate(-50%, -50%) rotate(360deg) scale(1.2)';
+                    setTimeout(() => {
+                        robot.style.transform = 'translate(-50%, -50%)';
+                    }, 1000);
+                    return;
+                case 'reset':
+                    robotPosition = { x: 50, y: 50 };
+                    break;
+            }
+            
+            robot.style.left = robotPosition.x + '%';
+            robot.style.top = robotPosition.y + '%';
+        }
+
+        // Advanced Robot Programming for Teen Developers
+        function initializeRobotBlockly() {
+            if (robotWorkspace) {
+                robotWorkspace.dispose();
+            }
+            
+            robotWorkspace = Blockly.inject('robot-blockly', {
+                toolbox: `
+                <xml>
+                    <category name="Movement" colour="120">
+                        <block type="robot_move_forward"></block>
+                        <block type="robot_turn_left"></block>
+                        <block type="robot_turn_right"></block>
+                    </category>
+                    <category name="Control" colour="290">
+                        <block type="controls_repeat_ext"></block>
+                        <block type="controls_if"></block>
+                        <block type="controls_for"></block>
+                    </category>
+                    <category name="Logic" colour="210">
+                        <block type="logic_compare"></block>
+                        <block type="logic_boolean"></block>
+                    </category>
+                </xml>
+                `,
+                grid: {
+                    spacing: 20,
+                    length: 3,
+                    colour: '#ccc',
+                    snap: true
+                },
+                zoom: {
+                    controls: true,
+                    wheel: true,
+                    startScale: 0.8
+                }
+            });
+            
+            // Define custom robot blocks
+            defineRobotBlocks();
+        }
+
+        function defineRobotBlocks() {
+            Blockly.Blocks['robot_move_forward'] = {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("🤖 Move Forward");
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(120);
+                }
+            };
+
+            Blockly.Blocks['robot_turn_left'] = {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("🤖 Turn Left");
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(120);
+                }
+            };
+
+            Blockly.Blocks['robot_turn_right'] = {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("🤖 Turn Right");
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(120);
+                }
+            };
+
+            Blockly.JavaScript['robot_move_forward'] = function(block) {
+                return 'moveAdvancedRobot("forward");\n';
+            };
+
+            Blockly.JavaScript['robot_turn_left'] = function(block) {
+                return 'moveAdvancedRobot("left");\n';
+            };
+
+            Blockly.JavaScript['robot_turn_right'] = function(block) {
+                return 'moveAdvancedRobot("right");\n';
+            };
+        }
+
+        function runRobotProgram() {
+            if (!robotWorkspace) return;
+            
+            const code = Blockly.JavaScript.workspaceToCode(robotWorkspace);
+            try {
+                eval(code);
+            } catch (error) {
+                console.error('Robot program error:', error);
+            }
+        }
+
+        function resetRobotProgram() {
+            robotPosition = { x: 50, y: 50 };
+            robotDirection = 0;
+            const robot = document.getElementById('advanced-robot');
+            robot.style.left = '50%';
+            robot.style.top = '50%';
+            robot.style.transform = 'translate(-50%, -50%)';
+        }
+
+        function moveAdvancedRobot(direction) {
+            const robot = document.getElementById('advanced-robot');
+            const step = 8;
+            
+            switch(direction) {
+                case 'forward':
+                    switch(robotDirection) {
+                        case 0: robotPosition.x = Math.min(robotPosition.x + step, 95); break;
+                        case 90: robotPosition.y = Math.min(robotPosition.y + step, 95); break;
+                        case 180: robotPosition.x = Math.max(robotPosition.x - step, 5); break;
+                        case 270: robotPosition.y = Math.max(robotPosition.y - step, 5); break;
+                    }
+                    break;
+                case 'left':
+                    robotDirection = (robotDirection + 270) % 360;
+                    break;
+                case 'right':
+                    robotDirection = (robotDirection + 90) % 360;
+                    break;
+            }
+            
+            robot.style.left = robotPosition.x + '%';
+            robot.style.top = robotPosition.y + '%';
+            robot.style.transform = `translate(-50%, -50%) rotate(${robotDirection}deg)`;
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CodewiseHub Platform Initialized');
+            
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDk5aK%2B13ftHfjxtlCG0fpW6PjRq7POcIyyauyur%2FbEG42sKvX8Yhyp8cz0X%2BaqRFNqHQmkYEKLvSmtdWEOHOAwUXJcvS9J%2FMG%2BdDK9qNqo2BBGfzl8WCsrjTgOP9ofk99XEJCtgsqNeX3Anu3qpZYW1CDxvuYw3Jilm%2BpTl5uHHAYVfFW%2F8t7qgDo0vEabW7THrAwb570wEtVMNUbjEiAkncjno6xCSfi1JzQarp7eILmsqzFY5Tdf7p7NSuM14p%2F7Ckwkji%2FPCX0zbHU8xZCTK7pOyXaRBnjgWTa09%2B2iIZDlFn00FgjBTEatcBc%2FKL8psvfsPd3QgKwB89qE8ZSbHcVTXVJauFdcuEMAXj8dmRZOaSYAFCXMg94HRqHumjQuHDu3cp%2BhncF8kimn7BOLnP76ZbJw7HpgHqKxMnw6pFaGMXFyP5Bi7TTzDh0dAmIz%2FfL7bEpU8FGS%2Fdm2ANs%2FgvREh0KrZ%2FzStjBiBNiR8W5GucsyKeQHUMOSFWPwZz1jAqWT1Azq%2BxQ0Udc0VzG3k%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDk5aK+13ftHfjxtlCG0fpW6PjRq7POcIyyauyur/bEG42sKvX8Yhyp8cz0X+aqRFNqHQmkYEKLvSmtdWEOHOAwUXJcvS9J/MG+dDK9qNqo2BBGfzl8WCsrjTgOP9ofk99XEJCtgsqNeX3Anu3qpZYW1CDxvuYw3Jilm+pTl5uHHAYVfFW/8t7qgDo0vEabW7THrAwb570wEtVMNUbjEiAkncjno6xCSfi1JzQarp7eILmsqzFY5Tdf7p7NSuM14p/7Ckwkji/PCX0zbHU8xZCTK7pOyXaRBnjgWTa09+2iIZDlFn00FgjBTEatcBc/KL8psvfsPd3QgKwB89qE8ZSbHcVTXVJauFdcuEMAXj8dmRZOaSYAFCXMg94HRqHumjQuHDu3cp+hncF8kimn7BOLnP76ZbJw7HpgHqKxMnw6pFaGMXFyP5Bi7TTzDh0dAmIz/fL7bEpU8FGS/dm2ANs/gvREh0KrZ/zStjBiBNiR8W5GucsyKeQHUMOSFWPwZz1jAqWT1Azq+xQ0Udc0VzG3k=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

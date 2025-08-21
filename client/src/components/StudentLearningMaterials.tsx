@@ -253,6 +253,48 @@ export function StudentLearningMaterials({ ageGroup }: StudentLearningMaterialsP
           completed: false
         }
       ]
+    },
+    {
+      id: 'prompt-engineering',
+      title: '🤖 AI Prompt Engineering',
+      description: 'Learn the art of crafting effective prompts for AI models',
+      ageGroup: '12-17',
+      difficulty: 'intermediate',
+      duration: '3 hours',
+      lessonsCount: 4,
+      completedLessons: 0,
+      thumbnail: '/api/placeholder/300/200',
+      lessons: [
+        {
+          id: 'prompt-1',
+          title: 'What is Prompt Engineering?',
+          type: 'video',
+          duration: '2 min',
+          completed: false,
+          videoUrl: 'https://www.youtube.com/embed/dOxUroR57xs'
+        },
+        {
+          id: 'prompt-2',
+          title: 'Writing Clear Prompts',
+          type: 'interactive',
+          duration: '30 min',
+          completed: false
+        },
+        {
+          id: 'prompt-3',
+          title: 'Advanced Techniques',
+          type: 'interactive',
+          duration: '45 min',
+          completed: false
+        },
+        {
+          id: 'prompt-4',
+          title: 'Real-World Applications',
+          type: 'coding',
+          duration: '60 min',
+          completed: false
+        }
+      ]
     }
   ];
 
@@ -437,19 +479,36 @@ export function StudentLearningMaterials({ ageGroup }: StudentLearningMaterialsP
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                <div className="text-center">
-                  <Play className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600">Lesson content would appear here</p>
-                  <p className="text-sm text-gray-500">Duration: {activeLesson.duration}</p>
+              {(activeLesson as any).videoUrl && (
+                <div className="aspect-video bg-gray-100 rounded-lg mb-4 overflow-hidden">
+                  <iframe
+                    src={(activeLesson as any).videoUrl}
+                    className="w-full h-full"
+                    allowFullScreen
+                    title={activeLesson.title}
+                  />
                 </div>
-              </div>
+              )}
+              
+              {!(activeLesson as any).videoUrl && (
+                <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                  <div className="text-center">
+                    <Play className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-600">Interactive lesson content</p>
+                    <p className="text-sm text-gray-500">Duration: {activeLesson.duration}</p>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex justify-between">
-                <Button variant="outline" disabled={!activeLesson.completed}>
-                  Mark as Complete
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveLesson(null)}
+                >
+                  Back to Course
                 </Button>
-                <Button>
-                  {activeLesson.type === 'video' ? 'Watch Video' : 
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  {(activeLesson as any).videoUrl ? 'Mark as Watched' : 
                    activeLesson.type === 'coding' ? 'Start Coding' :
                    activeLesson.type === 'quiz' ? 'Take Quiz' : 'Start Lesson'}
                 </Button>

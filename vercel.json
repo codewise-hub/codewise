@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/static-build"
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npm run vercel-build",
+        "outputDirectory": "dist/public"
+      }
     },
     {
       "src": "api/**/*.ts",
@@ -13,16 +17,18 @@
       }
     }
   ],
-  "buildCommand": "npm run vercel-build",
-  "outputDirectory": "dist/public",
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
     {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
+      "dest": "/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "$1"
+      "dest": "/index.html"
     }
   ]
 }

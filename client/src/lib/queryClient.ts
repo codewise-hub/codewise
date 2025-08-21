@@ -2,8 +2,16 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let errorMessage: string;
+    try {
+      // Try to parse as JSON first (for API errors)
+      const errorData = await res.json();
+      errorMessage = errorData.error || errorData.message || res.statusText;
+    } catch {
+      // If not JSON, create a new response to avoid body consumption issues
+      errorMessage = res.statusText || `HTTP ${res.status}`;
+    }
+    throw new Error(`${res.status}: ${errorMessage}`);
   }
 }
 
@@ -36,7 +44,17 @@ export async function apiRequest(
     credentials: "include",
   });
 
-  await throwIfResNotOk(res);
+  if (!res.ok) {
+    let errorMessage: string;
+    try {
+      const errorData = await res.json();
+      errorMessage = errorData.error || errorData.message || res.statusText;
+    } catch {
+      errorMessage = res.statusText || `HTTP ${res.status}`;
+    }
+    throw new Error(`${res.status}: ${errorMessage}`);
+  }
+  
   return await res.json();
 }
 
@@ -54,7 +72,17 @@ export const getQueryFn: <T>(options: {
       return null;
     }
 
-    await throwIfResNotOk(res);
+    if (!res.ok) {
+      let errorMessage: string;
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorData.message || res.statusText;
+      } catch {
+        errorMessage = res.statusText || `HTTP ${res.status}`;
+      }
+      throw new Error(`${res.status}: ${errorMessage}`);
+    }
+    
     return await res.json();
   };
 

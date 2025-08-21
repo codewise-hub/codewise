@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="bg-gray-800 text-white py-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Company Info */}
           <div>
             <div className="flex items-center mb-4">
@@ -52,6 +52,17 @@ export function Footer() {
               <li><a href="#privacy" className="hover:text-white transition">Privacy Policy</a></li>
             </ul>
           </div>
+
+          {/* Admin */}
+          <div>
+            <h3 className="font-semibold mb-4">Management</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li><a href="/admin" className="hover:text-white transition" data-testid="link-admin">Admin Panel</a></li>
+              <li><a href="/pricing" className="hover:text-white transition">Pricing</a></li>
+              <li><a href="#help" className="hover:text-white transition">Help Center</a></li>
+              <li><a href="#contact" className="hover:text-white transition">Contact</a></li>
+            </ul>
+          </div>
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-6">
@@ -60,17 +71,25 @@ export function Footer() {
               © 2025 CodewiseHub. All rights reserved.
             </p>
             
-            {/* Admin Access - Only show in footer */}
+            {/* Database Management Link */}
             {user && (
               <div className="mt-4 md:mt-0">
                 <a 
                   href="/admin-cms.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-gray-500 hover:text-gray-300 transition"
+                  className="text-xs text-gray-500 hover:text-gray-300 transition mr-4"
                   data-testid="link-admin-cms"
                 >
-                  Content Management System
+                  Database Manager
+                </a>
+                <span className="text-xs text-gray-500">|</span>
+                <a 
+                  href="/admin"
+                  className="text-xs text-gray-500 hover:text-gray-300 transition ml-4"
+                  data-testid="link-admin-panel"
+                >
+                  Admin Panel
                 </a>
               </div>
             )}

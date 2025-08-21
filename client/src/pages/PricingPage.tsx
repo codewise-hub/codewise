@@ -1,18 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, Star, Users, GraduationCap, Building2 } from "lucide-react";
+import { AuthModal } from "@/components/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 export function PricingPage() {
   const [packageType, setPackageType] = useState<'student' | 'school'>('student');
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    mode: 'signin' | 'signup';
+    role?: string;
+    ageGroup?: string;
+  }>({
+    isOpen: false,
+    mode: 'signin'
+  });
+  const { user } = useAuth();
+  const [location, setLocation] = useLocation();
 
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (user) {
+      setLocation('/');
+    }
+  }, [user, setLocation]);
+
+  const openAuthModal = (mode: 'signin' | 'signup', role?: string, ageGroup?: string) => {
+    setAuthModal({ isOpen: true, mode, role, ageGroup });
+  };
+
+  const closeAuthModal = () => {
+    setAuthModal({ isOpen: false, mode: 'signin' });
+  };
+
+  // Updated student packages with consistent pricing from homepage
   const studentPackages = [
     {
       id: 'young_coder_basic',
       name: 'Young Coder Basic',
-      price: 'R299',
+      price: 'R349', // Updated to match homepage
       period: '/month',
       description: 'Perfect for children ages 6-11 starting their coding journey',
       features: [
@@ -30,7 +60,7 @@ export function PricingPage() {
     {
       id: 'young_coder_premium',
       name: 'Young Coder Premium',
-      price: 'R499',
+      price: 'R549', // Updated to match homepage premium tier
       period: '/month',
       description: 'Enhanced learning experience for young coders',
       features: [
@@ -49,7 +79,7 @@ export function PricingPage() {
     {
       id: 'teen_coder_pro',
       name: 'Teen Coder Pro',
-      price: 'R699',
+      price: 'R749', // Updated to match homepage premium tier
       period: '/month',
       description: 'Advanced coding education for teenagers',
       features: [
@@ -73,273 +103,160 @@ export function PricingPage() {
       name: 'School Standard',
       price: 'R6,999',
       period: '/month',
-      description: 'Comprehensive coding education for schools',
+      description: 'Perfect for small schools and classrooms',
       features: [
-        'Up to 200 student accounts',
-        'Teacher dashboard and tools',
-        'Curriculum planning resources',
+        'Up to 50 students',
+        'Teacher dashboard',
         'Progress analytics',
-        'Parent communication tools',
+        'Curriculum management',
         'Basic support',
-        'Monthly training sessions'
+        'Student assignments'
       ],
-      popular: true,
-      maxStudents: 200,
+      popular: false,
       color: 'blue'
     },
     {
-      id: 'school_enterprise',
-      name: 'School Enterprise',
-      price: 'R17,499',
+      id: 'school_premium',
+      name: 'School Premium',
+      price: 'R12,999',
       period: '/month',
-      description: 'Enterprise-grade solution for large institutions',
+      description: 'Comprehensive solution for larger institutions',
       features: [
-        'Unlimited student accounts',
-        'Advanced analytics dashboard',
-        'Custom curriculum development',
-        'Dedicated account manager',
+        'Up to 200 students',
+        'Advanced analytics',
+        'Custom branding',
         'Priority support',
-        'On-site training programs',
-        'API access for integrations',
-        'White-label options'
+        'Advanced reporting',
+        'Integration capabilities',
+        'Professional development'
       ],
-      popular: false,
-      maxStudents: 'Unlimited',
+      popular: true,
       color: 'purple'
     }
   ];
 
-  const getColorClasses = (color: string, isPopular: boolean) => {
-    const baseClasses = isPopular ? 'ring-2 ring-purple-500' : '';
-    switch (color) {
-      case 'blue':
-        return `${baseClasses} border-blue-200 bg-blue-50`;
-      case 'purple':
-        return `${baseClasses} border-purple-200 bg-purple-50`;
-      case 'green':
-        return `${baseClasses} border-green-200 bg-green-50`;
-      default:
-        return baseClasses;
-    }
-  };
-
-  const getButtonClasses = (color: string) => {
-    switch (color) {
-      case 'blue':
-        return 'bg-blue-600 hover:bg-blue-700';
-      case 'purple':
-        return 'bg-purple-600 hover:bg-purple-700';
-      case 'green':
-        return 'bg-green-600 hover:bg-green-700';
-      default:
-        return 'bg-blue-600 hover:bg-blue-700';
-    }
-  };
+  const PackageCard = ({ pkg, type }: { pkg: any, type: 'student' | 'school' }) => (
+    <Card className={`relative ${pkg.popular ? 'ring-2 ring-purple-500' : ''}`}>
+      {pkg.popular && (
+        <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-purple-500">
+          <Star className="w-3 h-3 mr-1" />
+          Most Popular
+        </Badge>
+      )}
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {type === 'student' ? <GraduationCap className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
+          {pkg.name}
+        </CardTitle>
+        <CardDescription>{pkg.description}</CardDescription>
+        <div className="text-3xl font-bold">
+          {pkg.price}
+          <span className="text-sm font-normal text-gray-500">{pkg.period}</span>
+        </div>
+        {pkg.ageGroup && (
+          <Badge variant="outline">{pkg.ageGroup}</Badge>
+        )}
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2 mb-6">
+          {pkg.features.map((feature: string, index: number) => (
+            <li key={index} className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-500" />
+              <span className="text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="space-y-2">
+          <Button 
+            onClick={() => openAuthModal('signup', type === 'student' ? 'student' : 'school_admin', pkg.ageGroup?.includes('6-11') ? '6-11' : '12-17')}
+            className="w-full"
+            data-testid={`button-signup-${pkg.id}`}
+          >
+            Get Started
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => openAuthModal('signin')}
+            className="w-full"
+            data-testid={`button-signin-${pkg.id}`}
+          >
+            Sign In
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Choose Your Learning Path
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Choose Your Learning Journey
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Unlock the world of coding with our comprehensive educational packages designed for young learners and schools
+            Flexible pricing plans designed for individual learners and educational institutions
           </p>
         </div>
 
         {/* Package Type Toggle */}
-        <div className="flex justify-center mb-12">
-          <Tabs value={packageType} onValueChange={(value: string) => setPackageType(value as 'student' | 'school')} className="w-full max-w-md">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="student" className="flex items-center space-x-2">
-                <GraduationCap className="w-4 h-4" />
-                <span>Student Plans</span>
-              </TabsTrigger>
-              <TabsTrigger value="school" className="flex items-center space-x-2">
-                <Building2 className="w-4 h-4" />
-                <span>School Plans</span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        <Tabs value={packageType} onValueChange={(value) => setPackageType(value as 'student' | 'school')} className="mb-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="student" className="flex items-center gap-2">
+              <GraduationCap className="w-4 h-4" />
+              Student Plans
+            </TabsTrigger>
+            <TabsTrigger value="school" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              School Plans
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Student Packages */}
-        {packageType === 'student' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {studentPackages.map((pkg) => (
-              <Card 
-                key={pkg.id} 
-                className={`relative ${getColorClasses(pkg.color, pkg.popular)} transition-all duration-200 hover:shadow-lg`}
-                data-testid={`card-package-${pkg.id}`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-purple-600 text-white px-4 py-1">
-                      <Star className="w-3 h-3 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl font-bold text-gray-900">
-                    {pkg.name}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 mb-4">
-                    {pkg.description}
-                  </CardDescription>
-                  <div className="flex justify-center items-baseline space-x-2">
-                    <span className="text-4xl font-bold text-gray-900">{pkg.price}</span>
-                    <span className="text-gray-600">{pkg.period}</span>
-                  </div>
-                  <Badge variant="outline" className="mt-2">
-                    Ages {pkg.ageGroup}
-                  </Badge>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    className={`w-full ${getButtonClasses(pkg.color)} text-white`}
-                    data-testid={`button-select-${pkg.id}`}
-                  >
-                    Get Started
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+          <TabsContent value="student" className="mt-8">
+            <div className="grid md:grid-cols-3 gap-8">
+              {studentPackages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} type="student" />
+              ))}
+            </div>
+          </TabsContent>
 
-        {/* School Packages */}
-        {packageType === 'school' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
-            {schoolPackages.map((pkg) => (
-              <Card 
-                key={pkg.id} 
-                className={`relative ${getColorClasses(pkg.color, pkg.popular)} transition-all duration-200 hover:shadow-lg`}
-                data-testid={`card-package-${pkg.id}`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-purple-600 text-white px-4 py-1">
-                      <Star className="w-3 h-3 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl font-bold text-gray-900">
-                    {pkg.name}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 mb-4">
-                    {pkg.description}
-                  </CardDescription>
-                  <div className="flex justify-center items-baseline space-x-2">
-                    <span className="text-4xl font-bold text-gray-900">{pkg.price}</span>
-                    <span className="text-gray-600">{pkg.period}</span>
-                  </div>
-                  <Badge variant="outline" className="mt-2">
-                    <Users className="w-3 h-3 mr-1" />
-                    {pkg.maxStudents} students
-                  </Badge>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    className={`w-full ${getButtonClasses(pkg.color)} text-white`}
-                    data-testid={`button-select-${pkg.id}`}
-                  >
-                    Contact Sales
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* FAQ Section */}
-        <div className="bg-white rounded-lg shadow-sm p-8 max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Frequently Asked Questions
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                What age groups do you support?
-              </h3>
-              <p className="text-gray-600">
-                We offer specialized programs for Young Coders (ages 6-11) with visual block programming 
-                and Teen Coders (ages 12-17) with text-based coding and advanced projects.
-              </p>
+          <TabsContent value="school" className="mt-8">
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {schoolPackages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} type="school" />
+              ))}
             </div>
-            
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Can I switch between packages?
-              </h3>
-              <p className="text-gray-600">
-                Yes! You can upgrade or downgrade your package at any time. Changes will be reflected 
-                in your next billing cycle.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Do you offer school discounts?
-              </h3>
-              <p className="text-gray-600">
-                Our School packages are designed specifically for educational institutions with 
-                bulk pricing and specialized features for classroom management.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                What programming languages are taught?
-              </h3>
-              <p className="text-gray-600">
-                Young Coders start with visual block programming, while Teen Coders learn Python, 
-                JavaScript, HTML/CSS, and AI/prompt engineering.
-              </p>
-            </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Contact Section */}
-        <div className="text-center mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Need Help Choosing?
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Our education specialists are here to help you find the perfect learning solution
-          </p>
-          <Button variant="outline" size="lg" data-testid="button-contact-sales">
-            Contact Our Team
-          </Button>
+        <div className="mt-16 text-center">
+          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Need a Custom Solution?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Contact us for enterprise pricing and custom features tailored to your organization's needs.
+            </p>
+            <Button variant="outline" className="px-8">
+              Contact Sales
+            </Button>
+          </div>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={authModal.isOpen}
+        mode={authModal.mode}
+        initialRole={authModal.role}
+        initialAgeGroup={authModal.ageGroup}
+        onClose={closeAuthModal}
+        onSuccess={() => {
+          // User will be redirected by the useEffect
+          closeAuthModal();
+        }}
+      />
     </div>
   );
 }

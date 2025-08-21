@@ -16,6 +16,7 @@ import { TeacherDashboard } from "@/pages/TeacherDashboard";
 import { ParentDashboard } from "@/pages/ParentDashboard";
 import { SchoolAdminDashboard } from "@/components/SchoolAdminDashboard";
 import { PricingPage } from "@/pages/PricingPage";
+import { AdminPage } from "@/pages/AdminPage";
 import { Footer } from "@/components/Footer";
 
 function AppContent() {
@@ -73,6 +74,9 @@ function AppContent() {
       <Switch>
         <Route path="/pricing">
           <PricingPage />
+        </Route>
+        <Route path="/admin">
+          <AdminPage />
         </Route>
         <Route path="/">
           {user ? renderDashboard() : <HomePage onAuthModalOpen={openAuthModal} />}

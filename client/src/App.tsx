@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Router, Route, Switch } from "wouter";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
@@ -13,6 +14,8 @@ import { HomePage } from "@/pages/HomePage";
 import { StudentDashboard } from "@/pages/StudentDashboard";
 import { TeacherDashboard } from "@/pages/TeacherDashboard";
 import { ParentDashboard } from "@/pages/ParentDashboard";
+import { SchoolAdminDashboard } from "@/components/SchoolAdminDashboard";
+import { PricingPage } from "@/pages/PricingPage";
 import { Footer } from "@/components/Footer";
 
 function AppContent() {
@@ -65,14 +68,21 @@ function AppContent() {
     );
   }
 
-  const renderContent = () => {
-    // Hide home content when users are logged in - show only dashboards
-    if (!user) {
-      return <HomePage onAuthModalOpen={openAuthModal} />;
-    }
-    
-    // Logged in users only see their role-specific dashboard
-    switch (user.role) {
+  const renderMainContent = () => {
+    return (
+      <Switch>
+        <Route path="/pricing">
+          <PricingPage onAuthModalOpen={openAuthModal} />
+        </Route>
+        <Route path="/">
+          {user ? renderDashboard() : <HomePage onAuthModalOpen={openAuthModal} />}
+        </Route>
+      </Switch>
+    );
+  };
+
+  const renderDashboard = () => {
+    switch (user?.role) {
       case 'student':
         return <StudentDashboard onCodingLabOpen={() => setCodingLabOpen(true)} />;
       case 'teacher':
@@ -87,46 +97,47 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins">
-      {/* External Font Awesome and Scripts */}
-      <link 
-        rel="stylesheet" 
-        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
-      />
-      
-      <Navigation 
-        onAuthModalOpen={openAuthModal}
-        onCodingLabOpen={() => setCodingLabOpen(true)}
+    <Router>
+      <div className="min-h-screen bg-gray-50 font-poppins">
+        {/* External Font Awesome and Scripts */}
+        <link 
+          rel="stylesheet" 
+          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
+        />
+        
+        <Navigation 
+          onAuthModalOpen={openAuthModal}
+          onCodingLabOpen={() => setCodingLabOpen(true)}
+        />
+        
+        {renderMainContent()}
 
-      />
-      
-      {renderContent()}
+        <AuthModal
+          isOpen={authModal.isOpen}
+          mode={authModal.mode}
+          initialRole={authModal.role}
+          initialAgeGroup={authModal.ageGroup}
+          onClose={closeAuthModal}
+          onSuccess={showNotification}
+        />
 
-      <AuthModal
-        isOpen={authModal.isOpen}
-        mode={authModal.mode}
-        initialRole={authModal.role}
-        initialAgeGroup={authModal.ageGroup}
-        onClose={closeAuthModal}
-        onSuccess={showNotification}
-      />
+        <CodingLabModal
+          isOpen={codingLabOpen}
+          onClose={() => setCodingLabOpen(false)}
+        />
 
-      <CodingLabModal
-        isOpen={codingLabOpen}
-        onClose={() => setCodingLabOpen(false)}
-      />
+        <NotificationToast
+          show={notification.show}
+          message={notification.message}
+          type={notification.type}
+          onClose={hideNotification}
+        />
 
-      <NotificationToast
-        show={notification.show}
-        message={notification.message}
-        type={notification.type}
-        onClose={hideNotification}
-      />
-
-      <Toaster />
-      
-      <Footer />
-    </div>
+        <Toaster />
+        
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

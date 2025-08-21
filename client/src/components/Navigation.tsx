@@ -1,14 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
+import { Link, useLocation } from "wouter";
 
 interface NavigationProps {
   onAuthModalOpen: (mode: 'signin' | 'signup', role?: string, ageGroup?: string) => void;
   onCodingLabOpen: () => void;
-  currentView?: 'dashboard' | 'admin';
-  onViewChange?: (view: 'dashboard' | 'admin') => void;
 }
 
-export function Navigation({ onAuthModalOpen, onCodingLabOpen, currentView = 'dashboard', onViewChange }: NavigationProps) {
+export function Navigation({ onAuthModalOpen, onCodingLabOpen }: NavigationProps) {
   const { user, signOut } = useAuth();
+  const [location] = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -29,9 +29,21 @@ export function Navigation({ onAuthModalOpen, onCodingLabOpen, currentView = 'da
           
           {!user ? (
             <div className="flex items-center space-x-4">
-              <a href="#home" className="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Home</a>
+              <Link href="/">
+                <a className={`px-3 py-2 font-medium transition-colors ${
+                  location === '/' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+                }`}>
+                  Home
+                </a>
+              </Link>
               <a href="#courses" className="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Courses</a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 px-3 py-2 font-medium">Pricing</a>
+              <Link href="/pricing">
+                <a className={`px-3 py-2 font-medium transition-colors ${
+                  location === '/pricing' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+                }`}>
+                  Pricing
+                </a>
+              </Link>
               <button 
                 onClick={() => onAuthModalOpen('signup')} 
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"

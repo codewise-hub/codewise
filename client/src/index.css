@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Custom colors */
+  --student-gradient-start: hsl(325, 92%, 81%);
+  --student-gradient-end: hsl(318, 100%, 95%);
+  --teacher-gradient-start: hsl(175, 79%, 75%);
+  --teacher-gradient-end: hsl(322, 76%, 94%);
+  --parent-gradient-start: hsl(255, 29%, 41%);
+  --parent-gradient-end: hsl(255, 40%, 63%);
+  --hero-gradient-start: hsl(235, 77%, 71%);
+  --hero-gradient-end: hsl(255, 29%, 41%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
+  }
+  
+  .student-gradient {
+    background: linear-gradient(135deg, var(--student-gradient-start) 0%, var(--student-gradient-end) 100%);
+  }
+  
+  .teacher-gradient {
+    background: linear-gradient(135deg, var(--teacher-gradient-start) 0%, var(--teacher-gradient-end) 100%);
+  }
+  
+  .parent-gradient {
+    background: linear-gradient(135deg, var(--parent-gradient-start) 0%, var(--parent-gradient-end) 100%);
+  }
+  
+  .bounce-animation {
+    animation: bounce 2s infinite;
+  }
+  
+  .course-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .role-selector, .age-selector {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .role-selector:hover, .age-selector:hover {
+    transform: scale(1.05);
+  }
+  
+  .blockly-container, .monaco-container {
+    height: 400px;
+    width: 100%;
+    border: 2px solid hsl(20, 5.9%, 90%);
+    border-radius: 8px;
+  }
+  
+  .microbit-simulator {
+    background: hsl(220, 13%, 18%);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+  }
+  
+  .led-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin: 20px 0;
+  }
+  
+  .led {
+    width: 20px;
+    height: 20px;
+    background: hsl(211, 10%, 39%);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .led.active {
+    background: hsl(0, 81%, 63%);
+    box-shadow: 0 0 10px hsl(0, 81%, 63%);
+  }
+  
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  
+  .progress-ring-circle {
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 0.5s ease;
+  }
+  
+  .dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .achievement-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: hsl(55, 92%, 88%);
+    color: hsl(32, 95%, 44%);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0.25rem;
+  }
+  
+  .achievement-badge.earned {
+    background: hsl(138, 76%, 88%);
+    color: hsl(145, 63%, 20%);
+  }
+  
+  .editor-tabs {
+    display: flex;
+    background: hsl(210, 17%, 95%);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+  
+  .editor-tab {
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .editor-tab.active {
+    background: white;
+    border-bottom-color: hsl(207, 90%, 54%);
+    color: hsl(207, 90%, 54%);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { 
+    transform: translateY(0); 
+  }
+  40% { 
+    transform: translateY(-10px); 
+  }
+  60% { 
+    transform: translateY(-5px); 
+  }
+}

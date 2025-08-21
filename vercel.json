@@ -7,7 +7,10 @@
     },
     {
       "src": "api/**/*.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "runtime": "nodejs18.x"
+      }
     }
   ],
   "buildCommand": "npm run vercel-build",
@@ -21,10 +24,5 @@
       "src": "/(.*)",
       "dest": "$1"
     }
-  ],
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  ]
 }

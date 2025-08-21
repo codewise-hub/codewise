@@ -207,14 +207,8 @@ export class EnhancedDatabaseStorage implements IEnhancedStorage {
 
   // Course operations
   async getCourses(ageGroup?: string, schoolId?: string): Promise<Course[]> {
-    let query = db.select().from(courses);
-    
-    if (ageGroup) {
-      query = query.where(eq(courses.ageGroup, ageGroup));
-    }
-    
-    // For school-specific courses, filter by teacher's school
     if (schoolId) {
+      // For school-specific courses, filter by teacher's school
       const schoolCourses = await db.select()
         .from(courses)
         .leftJoin(users, eq(courses.teacherId, users.id))
@@ -222,7 +216,11 @@ export class EnhancedDatabaseStorage implements IEnhancedStorage {
       return schoolCourses.map(row => row.courses);
     }
     
-    return await query;
+    if (ageGroup) {
+      return await db.select().from(courses).where(eq(courses.ageGroup, ageGroup));
+    }
+    
+    return await db.select().from(courses);
   }
 
   async getCourseById(id: string): Promise<Course | undefined> {
